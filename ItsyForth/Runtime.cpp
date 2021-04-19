@@ -9,7 +9,46 @@
 #include "Word.hpp"
 #include "OpCode.hpp"
 #include <stddef.h>
+#include "BaseMemory.hpp"
 
+Runtime::Runtime(int heapSize, int dataStackSize, int returnStackSize)
+: stackPtr(0), returnPtr(0), ip(0), currentWord(0)
+{
+	heap = new char[heapSize];
+	dataStack = new int[dataStackSize];
+	returnStack = new int[returnStackSize];
+	reset();
+}
+
+Runtime::~Runtime() {
+	delete [] heap;
+	delete [] dataStack;
+	delete [] returnStack;
+}
+
+void Runtime::reset() {
+	baseMemory()->reset();
+	stackPtr = 0;
+	returnPtr = 0;
+	ip = 0;
+	currentWord = 0;
+}
+
+int Runtime::getInt(int addr) {
+	return *(int*)(heap + addr);
+}
+
+void Runtime::setInt(int addr, int value) {
+	*(int*)(heap + addr) = value;
+}
+
+char Runtime::getChar(int addr) {
+	return heap[addr];
+}
+
+void Runtime::setChar(int addr, char value) {
+	heap[addr] = value;
+}
 
 int Runtime::tos() {
 	return dataStack[stackPtr - 1];
@@ -39,27 +78,46 @@ void Runtime::pushReturn(int value) {
 	returnStack[returnPtr++] = value;
 }
 
-
-
 int Runtime::peekNextInstruction() {
-	return getInt(getInstructionPointer());
+	return getInt(ip);
 }
 
 int Runtime::consumeNextInstruction() {
-	int result = getInt(getInstructionPointer());
-	setInstructionPointer(getInstructionPointer()+1);
+	int result = getInt(ip);
+	ip += sizeof(int);
 	return result;
 }
 
-void Runtime::execute(int wordAddress) {
-	reset(wordAddress + (int)offsetof(struct Word, data));
-	int ip = getInstructionPointer();
+int Runtime::getInstructionPointer() {
+	return ip;
+}
+
+void Runtime::setInstructionPointer(int newIP) {
+	ip = newIP;
+}
+
+int Runtime::getCurrentWordAddr() {
+	return currentWord;
+}
+
+char* Runtime::toAnsoluteAddr(int addr) {
+	return heap + addr;
+}
+
+int Runtime::toRelativeAddr(char* ptr) {
+	return (int)(ptr - heap);
+}
+
+void Runtime::execute(int newAbortIP, int newIP) {
+	reset();
+	baseMemory()->abortVector = newAbortIP;
+	ip = newIP;
 	while (ip != 0) {
 		currentWord = consumeNextInstruction();
-		OpCode op(getInt(currentWord + (int)offsetof(struct Word, opcode)));
+		Word* w = (Word*)toAnsoluteAddr(currentWord);
+		OpCode op(w->opcode);
 		op.execute(this);
 	}
 }
-
 
 

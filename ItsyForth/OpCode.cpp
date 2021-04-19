@@ -1,6 +1,7 @@
 #include "OpCode.hpp"
 #include "Runtime.hpp"
 #include "Word.hpp"
+#include "CountedString.hpp"
 #include <string>
 #include <iostream>
 
@@ -22,24 +23,40 @@ int digitValue(int base, char c) {
 	}
 }
 
-int compareCountedString(Runtime* runtime, int addr1, int addr2) {
-	int len1 = runtime->getChar(addr1);
-	int diff = len1 - runtime->getChar(addr2);
-	while (diff == 0 && len1 > 0) {
-		addr1++;
-		addr2++;
-		len1--;
-		diff = runtime->getChar(addr1) - runtime->getChar(addr2);
+int doWord(Runtime* runtime, char delim) {
+	int tibAddr = runtime->getInt(TIBAddr);
+	int tibLength = runtime->getInt(tibAddr);
+	int tibInOffset = runtime->getInt(ToInAddr);
+	char delimeter = runtime->popData();
+	int pad = runtime->getInt(DictionaryPointerAddr) + 1;
+	
+	int len = 0;
+	bool done = false;
+	while (tibInOffset < tibLength && !done) {
+		char c = runtime->getChar(tibAddr + tibInOffset);
+		runtime->setChar(pad++, c);
+		if (c == delimeter) {
+			runtime->setChar(runtime->getInt(DictionaryPointerAddr), len);
+			done = true;
+		} else {
+			len++;
+		}
 	}
-	return diff;
+	return runtime->getInt(DictionaryPointerAddr);
 }
 
-OpCode::OpCode(int codeIn) {
-	code = codeIn;
+
+OpCode::OpCode(int codeIn)
+: code(codeIn)
+{
 }
 
 void OpCode::execute(Runtime* runtime) {
 	switch (code) {
+	case DoColon:
+		runtime->pushReturn(runtime->getInstructionPointer());
+		runtime->setInstructionPointer(runtime->getCurrentWordAddr() + (int)offsetof(struct Word, data));
+		break;
 	case DoSemicolon:
 		runtime->setInstructionPointer(runtime->popReturn());
 		break;
@@ -58,8 +75,7 @@ void OpCode::execute(Runtime* runtime) {
 		runtime->setInt(DictionaryPointerAddr, dp + sizeof(int));
 		break; }
 	case Lit:
-		runtime->pushData(runtime->getInt(runtime->getInstructionPointer()));
-		runtime->setInstructionPointer(runtime->getInstructionPointer() + sizeof(int));
+		runtime->pushData(runtime->consumeNextInstruction());
 		break;
 	case Rot: {
 		int temp = runtime->peekData(2);
@@ -148,7 +164,7 @@ void OpCode::execute(Runtime* runtime) {
 		}
 		runtime->pushData(ndx);
 		break; }
-	case Word:{ //( char -- addr )
+	case Word: { //( char -- addr )
 		int tibAddr = runtime->getInt(TIBAddr);
 		int tibLength = runtime->getChar(tibAddr);
 		int tibInOffset = runtime->getInt(ToInAddr);
@@ -193,26 +209,37 @@ void OpCode::execute(Runtime* runtime) {
 		}
 		if (thisWord != 0) {
 			runtime->pushData(thisWord);
-			runtime->pushData(runtime->getChar(thisWord + (int)offsetof(struct Word, immediate)));
+			runtime->pushData(runtime->getInt(thisWord + (int)offsetof(struct Word, flags)) & Word::IMMEDIATE_MASK);
 		} else {
 			runtime->pushData(stringAddr);
 			runtime->pushData(0);
 		}
 		break; }
-	case Colon:	// compiling word
+	case Colon:	{	// compiling word
+		// set state to compile
+		runtime->setInt(StateAddr, -1);
+	
+		// set previous link
+		int dp = runtime->getInt(DictionaryPointerAddr);
+		int lastWord = runtime->getInt(LastWord);
+		
+		class Word* w = (class Word*)runtime->getHeadAddr(dp);
+		w->previous = lastWord;
+		runtime->setInt(LastWord, dp);
+		w->flags = 0;
+		w->opcode = Colon;
+		CountedString name(w->name);
+		
+		
+		
+		
+		break; }
 	case SemiColon:
 	case Create:
-		
 	case SemiCode:
 	case Constant:
 	case Interpret:
 	default: {
-		// the doColon case
-		// the runtime has determined that the current instruction is a colon definition.
-		int ip = runtime->getInstructionPointer();
-		runtime->pushReturn(ip);
-		int wordAddr = runtime->getCurrentWordAddr();
-		runtime->setInstructionPointer(wordAddr + (int)offsetof(struct Word, data));
 		break; }
 	}
 }

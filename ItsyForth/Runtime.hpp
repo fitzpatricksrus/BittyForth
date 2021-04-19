@@ -8,14 +8,17 @@
 #ifndef Runtime_hpp
 #define Runtime_hpp
 
+#include <stddef.h>
+
 class Word;
+class BaseMemory;
 
 class Runtime {
 public:
-	Runtime(int heapSize);
+	Runtime(int heapSize, int dataStackSize = 256, int returnStackSize = 256);
 	~Runtime();
 	
-	void reset(int newIP);
+	void reset();
 			
 	int getInt(int addr);
 	void setInt(int addr, int value);
@@ -31,14 +34,18 @@ public:
 	int popReturn();
 	void pushReturn(int value);
 	
+	int peekNextInstruction();
+	int consumeNextInstruction();
 	int getInstructionPointer();
 	void setInstructionPointer(int newIP);
 	int getCurrentWordAddr();
 	
-	int peekNextInstruction();
-	int consumeNextInstruction();
+	char* toAnsoluteAddr(int addr);
+	int toRelativeAddr(char* ptr);
+	BaseMemory* baseMemory() { return (BaseMemory*)heap; }
 		
-	void execute(int wordAddress);
+	void execute(int newAbortIP, int newIP);
+	
 private:
 	char* heap;
 	int* dataStack;
@@ -46,7 +53,7 @@ private:
 	
 	int stackPtr;
 	int returnPtr;
-	int instructionPtr;
+	int ip;
 	int currentWord;
 };
 
