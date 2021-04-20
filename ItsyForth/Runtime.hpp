@@ -9,9 +9,10 @@
 #define Runtime_hpp
 
 #include <stddef.h>
+#include "Types.hpp"
 
-class Word;
-class BaseMemory;
+class DictionaryWord;
+class StructuredMemory;
 
 class Runtime {
 public:
@@ -19,42 +20,40 @@ public:
 	~Runtime();
 	
 	void reset();
-			
-	int getInt(int addr);
-	void setInt(int addr, int value);
-	char getChar(int addr);
-	void setChar(int addr, char value);
+	void abort();
 	
-	int tos();
-	int popData();
-	void pushData(int data);
-	int peekData(int ndx);
-	void pokeData(int ndx, int value);
+	XData tos();
+	XData popData();
+	void pushData(XData data);
+	XData peekData(long ndx);
+	void pokeData(long ndx, XData value);
 	
-	int popReturn();
-	void pushReturn(int value);
+	IPtr popReturn();
+	void pushReturn(IPtr value);
 	
-	int peekNextInstruction();
-	int consumeNextInstruction();
-	int getInstructionPointer();
-	void setInstructionPointer(int newIP);
-	int getCurrentWordAddr();
+	DictionaryWord* peekNextInstruction();
+	DictionaryWord* consumeNextInstruction();
+	IPtr getInstructionPointer();
+	void setInstructionPointer(IPtr newIP);
+	DictionaryWord* getCurrentWordAddr();
 	
-	char* toAnsoluteAddr(int addr);
-	int toRelativeAddr(char* ptr);
-	BaseMemory* baseMemory() { return (BaseMemory*)heap; }
+	StructuredMemory* structuredMemory();
+	StructuredMemory* operator->();
 		
-	void execute(int newAbortIP, int newIP);
+	void execute(DictionaryWord* newAbortIP, IPtr newIP);
 	
 private:
-	char* heap;
-	int* dataStack;
-	int* returnStack;
+	void clearStacksAndIp();
+
+	char* memory;
+	StructuredMemory* structMemory;		//alias of 'memory' that can be treated like a c struct
+	XData* dataStack;
+	IPtr* returnStack;
 	
 	int stackPtr;
 	int returnPtr;
-	int ip;
-	int currentWord;
+	IPtr ip;
+	DictionaryWord* currentWord;
 };
 
 #endif /* Runtime_hpp */

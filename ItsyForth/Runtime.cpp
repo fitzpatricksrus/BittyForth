@@ -1,123 +1,108 @@
-//
-//  Runtime.cpp
-//  ItsyForth
-//
-//  Created by Dad on 4/17/21.
-//
-
 #include "Runtime.hpp"
-#include "Word.hpp"
+#include "DictionaryWord.hpp"
 #include "OpCode.hpp"
 #include <stddef.h>
-#include "BaseMemory.hpp"
+#include "StructuredMemory.hpp"
 
 Runtime::Runtime(int heapSize, int dataStackSize, int returnStackSize)
 : stackPtr(0), returnPtr(0), ip(0), currentWord(0)
 {
-	heap = new char[heapSize];
-	dataStack = new int[dataStackSize];
-	returnStack = new int[returnStackSize];
+	memory = new char[heapSize];
+	structMemory = (StructuredMemory*)memory;
+	dataStack = new XData[dataStackSize];
+	returnStack = new IPtr[returnStackSize];
 	reset();
 }
 
 Runtime::~Runtime() {
-	delete [] heap;
+	delete [] memory;
 	delete [] dataStack;
 	delete [] returnStack;
 }
 
-void Runtime::reset() {
-	baseMemory()->reset();
+void Runtime::clearStacksAndIp() {
 	stackPtr = 0;
 	returnPtr = 0;
 	ip = 0;
 	currentWord = 0;
 }
 
-int Runtime::getInt(int addr) {
-	return *(int*)(heap + addr);
+void Runtime::reset() {
+	structuredMemory()->reset();
+	clearStacksAndIp();
 }
 
-void Runtime::setInt(int addr, int value) {
-	*(int*)(heap + addr) = value;
+void Runtime::abort() {
+	structuredMemory()->abort();
+	clearStacksAndIp();
 }
 
-char Runtime::getChar(int addr) {
-	return heap[addr];
-}
-
-void Runtime::setChar(int addr, char value) {
-	heap[addr] = value;
-}
-
-int Runtime::tos() {
+XData Runtime::tos() {
 	return dataStack[stackPtr - 1];
 }
 
-int Runtime::popData() {
+XData Runtime::popData() {
 	return dataStack[--stackPtr];
 }
 
-void Runtime::pushData(int data) {
+void Runtime::pushData(XData data) {
 	dataStack[stackPtr++] = data;
 }
 
-int Runtime::peekData(int ndx) {
+XData Runtime::peekData(long ndx) {
 	return dataStack[stackPtr - 1 - ndx];
 }
 
-void Runtime::pokeData(int ndx, int value) {
+void Runtime::pokeData(long ndx, XData value) {
 	dataStack[stackPtr - 1 - ndx] = value;
 }
 
-int Runtime::popReturn() {
+IPtr Runtime::popReturn() {
 	return returnStack[--returnPtr];
 }
 
-void Runtime::pushReturn(int value) {
+void Runtime::pushReturn(IPtr value) {
 	returnStack[returnPtr++] = value;
 }
 
-int Runtime::peekNextInstruction() {
-	return getInt(ip);
+DictionaryWord* Runtime::peekNextInstruction() {
+	return *ip;
 }
 
-int Runtime::consumeNextInstruction() {
-	int result = getInt(ip);
-	ip += sizeof(int);
+DictionaryWord* Runtime::consumeNextInstruction() {
+	DictionaryWord* result = *ip;
+	ip++;
 	return result;
 }
 
-int Runtime::getInstructionPointer() {
+IPtr Runtime::getInstructionPointer() {
 	return ip;
 }
 
-void Runtime::setInstructionPointer(int newIP) {
+void Runtime::setInstructionPointer(IPtr newIP) {
 	ip = newIP;
 }
 
-int Runtime::getCurrentWordAddr() {
+DictionaryWord* Runtime::getCurrentWordAddr() {
 	return currentWord;
 }
 
-char* Runtime::toAnsoluteAddr(int addr) {
-	return heap + addr;
+StructuredMemory* Runtime::structuredMemory() {
+	return structMemory;
+}
+	
+StructuredMemory* Runtime::operator->() {
+	return structMemory;
 }
 
-int Runtime::toRelativeAddr(char* ptr) {
-	return (int)(ptr - heap);
-}
-
-void Runtime::execute(int newAbortIP, int newIP) {
+void Runtime::execute(IPtr newAbortIP, IPtr newIP) {
 	reset();
-	baseMemory()->abortVector = newAbortIP;
+	structMemory->abortVector = newAbortIP;
 	ip = newIP;
-	while (ip != 0) {
+	while (ip) {
 		currentWord = consumeNextInstruction();
-		Word* w = (Word*)toAnsoluteAddr(currentWord);
+		DictionaryWord* w = (DictionaryWord*)currentWord;
 		OpCode op(w->opcode);
 		op.execute(this);
 	}
 }
-
-

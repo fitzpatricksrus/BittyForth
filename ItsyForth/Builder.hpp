@@ -11,18 +11,18 @@
 #include <string>
 
 class Runtime;
-class Word;
+class DictionaryWord;
 class OpCode;
 
 class Builder {
 public:
 	Builder(Runtime* runtime);
 	
-	Word* allocateWord(std::string str, OpCode* op, int size = 0);
-	Word* allocateImmediateWord(std::string str, OpCode* op, int size = 0);
+	DictionaryWord* allocateWord(std::string str, OpCode* op, int size = 0);
+	DictionaryWord* allocateImmediateWord(std::string str, OpCode* op, int size = 0);
 	char* allocateBytes(int size);
 	void append(int value);
-	void append(Word* value);
+	void append(DictionaryWord* value);
 	
 	//int dp;	//at location 0 in runtime
 	

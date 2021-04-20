@@ -11,7 +11,7 @@
 class Runtime;
 
 struct OpCode {
-	enum code {
+	typedef enum Code {
 		DoColon,
 		DoSemicolon,
 		DoConstant,
@@ -43,13 +43,13 @@ struct OpCode {
 		SemiCode,
 		Constant,
 		Interpret
-	};
+	} Code;
 	
-	OpCode(int op);
+	OpCode(OpCode::Code op);
 	
 	void execute(Runtime* runtime);
 
-	int code;
+	OpCode::Code code;
 };
 
 

@@ -10,10 +10,10 @@
 		0FA47FE3262A6B2E00C3D147 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA47FE2262A6B2E00C3D147 /* main.cpp */; };
 		0FA47FEC262B4D3100C3D147 /* Runtime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA47FEA262B4D3100C3D147 /* Runtime.cpp */; };
 		0FA47FF0262B4DC300C3D147 /* OpCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA47FEE262B4DC300C3D147 /* OpCode.cpp */; };
-		0FA47FF4262B4DFB00C3D147 /* Word.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA47FF2262B4DFB00C3D147 /* Word.cpp */; };
 		0FA47FF8262B525400C3D147 /* Builder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA47FF6262B525400C3D147 /* Builder.cpp */; };
 		0FA47FFF262DF5D900C3D147 /* CountedString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA47FFD262DF5D900C3D147 /* CountedString.cpp */; };
-		0FA48004262E039B00C3D147 /* BaseMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA48002262E039B00C3D147 /* BaseMemory.cpp */; };
+		0FA48004262E039B00C3D147 /* StructuredMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA48002262E039B00C3D147 /* StructuredMemory.cpp */; };
+		0FCE6265262E7D9000CA85EC /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FCE6263262E7D9000CA85EC /* Types.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,14 +35,15 @@
 		0FA47FEB262B4D3100C3D147 /* Runtime.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Runtime.hpp; sourceTree = "<group>"; };
 		0FA47FEE262B4DC300C3D147 /* OpCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OpCode.cpp; sourceTree = "<group>"; };
 		0FA47FEF262B4DC300C3D147 /* OpCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OpCode.hpp; sourceTree = "<group>"; };
-		0FA47FF2262B4DFB00C3D147 /* Word.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Word.cpp; sourceTree = "<group>"; };
-		0FA47FF3262B4DFB00C3D147 /* Word.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Word.hpp; sourceTree = "<group>"; };
+		0FA47FF3262B4DFB00C3D147 /* DictionaryWord.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DictionaryWord.hpp; sourceTree = "<group>"; };
 		0FA47FF6262B525400C3D147 /* Builder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Builder.cpp; sourceTree = "<group>"; };
 		0FA47FF7262B525400C3D147 /* Builder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Builder.hpp; sourceTree = "<group>"; };
 		0FA47FFD262DF5D900C3D147 /* CountedString.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CountedString.cpp; sourceTree = "<group>"; };
 		0FA47FFE262DF5D900C3D147 /* CountedString.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CountedString.hpp; sourceTree = "<group>"; };
-		0FA48002262E039B00C3D147 /* BaseMemory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BaseMemory.cpp; sourceTree = "<group>"; };
-		0FA48003262E039B00C3D147 /* BaseMemory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BaseMemory.hpp; sourceTree = "<group>"; };
+		0FA48002262E039B00C3D147 /* StructuredMemory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = StructuredMemory.cpp; sourceTree = "<group>"; };
+		0FA48003262E039B00C3D147 /* StructuredMemory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StructuredMemory.hpp; sourceTree = "<group>"; };
+		0FCE6263262E7D9000CA85EC /* Types.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Types.cpp; sourceTree = "<group>"; };
+		0FCE6264262E7D9000CA85EC /* Types.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Types.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,14 +81,15 @@
 				0FA47FEB262B4D3100C3D147 /* Runtime.hpp */,
 				0FA47FEE262B4DC300C3D147 /* OpCode.cpp */,
 				0FA47FEF262B4DC300C3D147 /* OpCode.hpp */,
-				0FA47FF2262B4DFB00C3D147 /* Word.cpp */,
-				0FA47FF3262B4DFB00C3D147 /* Word.hpp */,
+				0FA47FF3262B4DFB00C3D147 /* DictionaryWord.hpp */,
 				0FA47FF6262B525400C3D147 /* Builder.cpp */,
 				0FA47FF7262B525400C3D147 /* Builder.hpp */,
 				0FA47FFD262DF5D900C3D147 /* CountedString.cpp */,
 				0FA47FFE262DF5D900C3D147 /* CountedString.hpp */,
-				0FA48002262E039B00C3D147 /* BaseMemory.cpp */,
-				0FA48003262E039B00C3D147 /* BaseMemory.hpp */,
+				0FA48002262E039B00C3D147 /* StructuredMemory.cpp */,
+				0FA48003262E039B00C3D147 /* StructuredMemory.hpp */,
+				0FCE6263262E7D9000CA85EC /* Types.cpp */,
+				0FCE6264262E7D9000CA85EC /* Types.hpp */,
 			);
 			path = ItsyForth;
 			sourceTree = "<group>";
@@ -148,11 +150,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0FA48004262E039B00C3D147 /* BaseMemory.cpp in Sources */,
+				0FA48004262E039B00C3D147 /* StructuredMemory.cpp in Sources */,
 				0FA47FF8262B525400C3D147 /* Builder.cpp in Sources */,
 				0FA47FEC262B4D3100C3D147 /* Runtime.cpp in Sources */,
-				0FA47FF4262B4DFB00C3D147 /* Word.cpp in Sources */,
 				0FA47FFF262DF5D900C3D147 /* CountedString.cpp in Sources */,
+				0FCE6265262E7D9000CA85EC /* Types.cpp in Sources */,
 				0FA47FF0262B4DC300C3D147 /* OpCode.cpp in Sources */,
 				0FA47FE3262A6B2E00C3D147 /* main.cpp in Sources */,
 			);
