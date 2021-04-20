@@ -66,21 +66,20 @@ OpCode::OpCode(OpCode::Code codeIn)
 {
 }
 
-void OpCode::execute(Runtime* runtime) {
+void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 	switch (code) {
 	case DoColon: {
 		runtime->pushReturn(runtime->getInstructionPointer());
-		DictionaryWord* currentWord = runtime->getCurrentWordAddr();
 		runtime->setInstructionPointer(&(currentWord->data[0].w));
 		break; }
 	case DoSemicolon:
 		runtime->setInstructionPointer(runtime->popReturn());
 		break;
 	case DoConstant:
-		runtime->pushData(runtime->getCurrentWordAddr()->data[0]);
+		runtime->pushData(currentWord->data[0]);
 		break;
 	case DoVariable:
-		runtime->pushData(&runtime->getCurrentWordAddr()->data[0]);
+		runtime->pushData(&currentWord->data[0]);
 		break;
 	case Abort:
 		runtime->abort();
@@ -252,7 +251,7 @@ void OpCode::execute(Runtime* runtime) {
 		newWordPtr->opcode = Colon;
 		
 		// call Word to copy into memory where "name" field will be allocated.
-		OpCode(OpCode::Word).execute(runtime);
+		OpCode(OpCode::Word).execute(runtime, currentWord);
 		
 		// allocate 32 bytes for the name field which will include the memory set by Word
 		runtime->allocate(sizeof(DictionaryWord::name));

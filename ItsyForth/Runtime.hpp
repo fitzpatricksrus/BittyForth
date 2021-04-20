@@ -2,9 +2,27 @@
 #define Runtime_hpp
 
 #include <stddef.h>
-#include "Types.hpp"
 
 class DictionaryWord;
+
+typedef long Num;
+typedef DictionaryWord** IPtr;
+typedef char* Ptr;
+
+typedef union XData {
+	char* ptr;
+	Num l;
+	DictionaryWord* w;
+	void* v;
+	
+	XData() {}
+	XData(long lIn) { l = lIn; }
+	XData(void* pIn) { v = pIn; }
+	operator long() { return l; }
+	operator char*() { return ptr; }
+	operator DictionaryWord*() { return w; }
+} XData;
+
 
 class Runtime {
 public:
@@ -27,15 +45,14 @@ public:
 	DictionaryWord* consumeNextInstruction();
 	IPtr getInstructionPointer();
 	void setInstructionPointer(IPtr newIP);
-	DictionaryWord* getCurrentWordAddr();
 			
-	void execute(IPtr newAbortIP, IPtr newIP);
+	void execute(DictionaryWord* newAbortWord, DictionaryWord* newIP /* must be colon word */);
 	
 	Ptr allocate(int bytes);
 	
 	template <typename T> T* append(T value);
 
-	IPtr abortVector;
+	DictionaryWord* abortWord;
 	Ptr dictionaryPtr;
 	Num numberBase;
 	char* tibAddr;

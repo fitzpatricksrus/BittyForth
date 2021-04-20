@@ -34,7 +34,7 @@ void Runtime::clearStacksAndIp() {
 }
 
 void Runtime::reset() {
-	abortVector = 0;
+	abortWord = 0;
 	dictionaryPtr = memory;
 	lastWord = 0;
 	clearStacksAndIp();
@@ -42,6 +42,7 @@ void Runtime::reset() {
 
 void Runtime::abort() {
 	clearStacksAndIp();
+	ip = abortWord->firstInstructionPtr();
 }
 
 XData Runtime::tos() {
@@ -90,19 +91,14 @@ void Runtime::setInstructionPointer(IPtr newIP) {
 	ip = newIP;
 }
 
-DictionaryWord* Runtime::getCurrentWordAddr() {
-	return currentWord;
-}
-
-void Runtime::execute(IPtr newAbortIP, IPtr newIP) {
+void Runtime::execute(DictionaryWord* newAbortWord, DictionaryWord* newIP) {
 	reset();
-	abortVector = newAbortIP;
-	ip = newIP;
+	abortWord = newAbortWord;
+	pushReturn(0L);
+	ip = newIP->firstInstructionPtr();
 	while (ip) {
-		currentWord = consumeNextInstruction();
-		DictionaryWord* w = (DictionaryWord*)currentWord;
-		OpCode op(w->opcode);
-		op.execute(this);
+		DictionaryWord* currentWord = consumeNextInstruction();
+		currentWord->opcode.execute(this);
 	}
 }
 

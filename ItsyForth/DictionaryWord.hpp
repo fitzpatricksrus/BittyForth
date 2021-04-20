@@ -9,9 +9,11 @@ public:
 	
 	DictionaryWord* previous;
 	Num flags;
-	OpCode::Code opcode;
+	OpCode opcode;
 	char name[32];
 	XData data[];
+	
+	IPtr firstInstructionPtr() { return (IPtr)data;}
 };
 
 #endif /* DictionaryWord_hpp */

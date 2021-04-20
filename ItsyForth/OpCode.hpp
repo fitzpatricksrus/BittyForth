@@ -2,6 +2,7 @@
 #define OpCode_hpp
 
 class Runtime;
+class DictionaryWord;
 
 struct OpCode {
 	typedef enum Code {
@@ -40,7 +41,7 @@ struct OpCode {
 	
 	OpCode(OpCode::Code op);
 	
-	void execute(Runtime* runtime);
+	void execute(Runtime* runtime, DictionaryWord* currentWord);
 
 	OpCode::Code code;
 };
