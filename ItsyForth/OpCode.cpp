@@ -25,12 +25,12 @@ int digitValue(int base, char c) {
 }
 
 char* getNextWordFromInput(Runtime* runtime, char delim) {
-	char* tibAddr = (*runtime)->tibPtr;
-	Num tibLength = (*runtime)->tibContentLength;
-	Num tibInOffset = (*runtime)->tibInputOffset;
+	char* tibAddr = runtime->tibAddr;
+	Num tibLength = runtime->tibContentLength;
+	Num tibInOffset = runtime->tibInputOffset;
 	char delimeter = runtime->popData();
-	char* padAddr = (*runtime)->dictionaryPtr;
-	char* outputAddr = (*runtime)->dictionaryPtr + 1;
+	char* padAddr = runtime->dictionaryPtr;
+	char* outputAddr = runtime->dictionaryPtr + 1;
 	
 	int len = 0;
 	bool done = false;
@@ -68,11 +68,11 @@ OpCode::OpCode(OpCode::Code codeIn)
 
 void OpCode::execute(Runtime* runtime) {
 	switch (code) {
-	case DoColon:
+	case DoColon: {
 		runtime->pushReturn(runtime->getInstructionPointer());
 		DictionaryWord* currentWord = runtime->getCurrentWordAddr();
 		runtime->setInstructionPointer(&(currentWord->data[0].w));
-		break;
+		break; }
 	case DoSemicolon:
 		runtime->setInstructionPointer(runtime->popReturn());
 		break;
@@ -80,16 +80,16 @@ void OpCode::execute(Runtime* runtime) {
 		runtime->pushData(runtime->getCurrentWordAddr()->data[0]);
 		break;
 	case DoVariable:
-		runtime->pushData((Num)&(runtime->getCurrentWordAddr()->data[0]));
+		runtime->pushData(&runtime->getCurrentWordAddr()->data[0]);
 		break;
 	case Abort:
 		runtime->abort();
 		break;
 	case Comma: {
-		runtime->structuredMemory()->append(runtime->popData());
+		runtime->append(runtime->popData());
 		break; }
 	case Lit:
-		runtime->pushData((Num)runtime->consumeNextInstruction());
+		runtime->pushData(runtime->consumeNextInstruction());
 		break;
 	case Rot: {
 		long temp = runtime->peekData(2);
@@ -147,9 +147,9 @@ void OpCode::execute(Runtime* runtime) {
 		//>number - ( double addr len -- double2 addr2-zero    ) if successful, or
 		//			( double addr len -- long     addr2-nonzero ) on error.
 		int len = runtime->popData();
-		char* addr = (char*)runtime->popData();
+		char* addr = runtime->popData();
 		Num dval = runtime->popData();
-		int base = (*runtime)->numberBase;
+		int base = runtime->numberBase;
 		bool done = false;
 		while (len > 0 && !done) {
 			int val = digitValue(base, *addr);
@@ -179,10 +179,10 @@ void OpCode::execute(Runtime* runtime) {
 		runtime->pushData(ndx);
 		break; }
 	case Word: { // ( char -- addr )
-		char* tibAddr = (*runtime)->tibPtr;
-		char* inputAddr = tibAddr + (*runtime)->tibInputOffset;
-		char* inputEndAddr = tibAddr + (*runtime)->tibContentLength;
-		char* padAddr = (*runtime)->dictionaryPtr;
+		char* tibAddr = runtime->tibAddr;
+		char* inputAddr = tibAddr + runtime->tibInputOffset;
+		char* inputEndAddr = tibAddr + runtime->tibContentLength;
+		char* padAddr = runtime->dictionaryPtr;
 		char* outputAddr = padAddr + 1;	//leave room for length byte
 		char delimeter = runtime->popData();
 		
@@ -211,12 +211,11 @@ void OpCode::execute(Runtime* runtime) {
 		// flag =  0, addr2 = counted string --> word was not found
 		// flag =  1, addr2 = call address   --> word is immediate
 		// flag = -1, addr2 = call address   --> word is not immediate
-		StructuredMemory* mem = runtime->structuredMemory();
-		char* stringAddr = (char*)runtime->popData();
-		DictionaryWord* thisWordAddr = mem->lastWord;
+		char* stringAddr = runtime->popData();
+		DictionaryWord* thisWordAddr = runtime->lastWord;
 		bool done = false;
 		while (thisWordAddr != 0 && !done) {
-			char* thisWordNameAddr = &(thisWordAddr->name[0]);
+			char* thisWordNameAddr = thisWordAddr->name;
 			
 			if (compareCountedString(runtime, stringAddr, thisWordNameAddr) != 0) {
 				thisWordAddr = thisWordAddr->previous;
@@ -226,25 +225,25 @@ void OpCode::execute(Runtime* runtime) {
 		}
 		if (thisWordAddr != 0) {
 			runtime->pushData(thisWordAddr);
-			runtime->pushData(((*runtime)(thisWordAddr + (long)offsetof(struct DictionaryWord, flags))) & DictionaryWord::IMMEDIATE_MASK);
+			runtime->pushData(thisWordAddr->flags & DictionaryWord::IMMEDIATE_MASK);
 		} else {
 			runtime->pushData(stringAddr);
-			runtime->pushData(0);
+			runtime->pushData(0L);
 		}
 		break; }
 	case Colon:	{	// compiling word
-		assert((*runtime)->compilerFlags == 0);
+		assert(runtime->compilerFlags == 0);
 		
 		// set state to compile
-		(*runtime)->compilerFlags = -1;
+		runtime->compilerFlags = -1;
 		
 		// -- create a new word --
-		long newWordAddr = (*runtime)->allocate(sizeof(DictionaryWord) - sizeof(DictionaryWord::name));
+		Ptr newWordAddr = runtime->allocate(sizeof(DictionaryWord) - sizeof(DictionaryWord::name));
 		DictionaryWord* newWordPtr = (DictionaryWord*)newWordAddr;
 		
 		// set previous link
-		newWordPtr->previous = (*runtime)->lastWord;
-		(*runtime)->lastWord = newWordAddr;
+		newWordPtr->previous = runtime->lastWord;
+		runtime->lastWord = newWordPtr;
 		
 		// clear all flags
 		newWordPtr->flags = 0;
@@ -256,7 +255,7 @@ void OpCode::execute(Runtime* runtime) {
 		OpCode(OpCode::Word).execute(runtime);
 		
 		// allocate 32 bytes for the name field which will include the memory set by Word
-		(*runtime)->allocate(sizeof(DictionaryWord::name));
+		runtime->allocate(sizeof(DictionaryWord::name));
 		break; }
 	case SemiColon:
 	case Create:

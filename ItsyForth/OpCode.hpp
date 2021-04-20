@@ -1,10 +1,3 @@
-//
-//  OpCode.hpp
-//  ItsyForth
-//
-//  Created by Dad on 4/17/21.
-//
-
 #ifndef OpCode_hpp
 #define OpCode_hpp
 

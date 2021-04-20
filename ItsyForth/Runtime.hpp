@@ -1,10 +1,3 @@
-//
-//  Runtime.hpp
-//  ItsyForth
-//
-//  Created by Dad on 4/17/21.
-//
-
 #ifndef Runtime_hpp
 #define Runtime_hpp
 
@@ -12,7 +5,6 @@
 #include "Types.hpp"
 
 class DictionaryWord;
-class StructuredMemory;
 
 class Runtime {
 public:
@@ -36,17 +28,27 @@ public:
 	IPtr getInstructionPointer();
 	void setInstructionPointer(IPtr newIP);
 	DictionaryWord* getCurrentWordAddr();
+			
+	void execute(IPtr newAbortIP, IPtr newIP);
 	
-	StructuredMemory* structuredMemory();
-	StructuredMemory* operator->();
-		
-	void execute(DictionaryWord* newAbortIP, IPtr newIP);
+	Ptr allocate(int bytes);
+	
+	template <typename T> T* append(T value);
+
+	IPtr abortVector;
+	Ptr dictionaryPtr;
+	Num numberBase;
+	char* tibAddr;
+	Num tibContentLength;
+	Num tibInputOffset;
+	DictionaryWord* lastWord;
+	Num compilerFlags;
+	char tib[256];
 	
 private:
 	void clearStacksAndIp();
 
 	char* memory;
-	StructuredMemory* structMemory;		//alias of 'memory' that can be treated like a c struct
 	XData* dataStack;
 	IPtr* returnStack;
 	
@@ -55,5 +57,13 @@ private:
 	IPtr ip;
 	DictionaryWord* currentWord;
 };
+
+template <typename T>
+T* Runtime::append(T value) {
+	T* result = (T*)allocate(sizeof(value));
+	*result = value;
+	return result;
+}
+
 
 #endif /* Runtime_hpp */

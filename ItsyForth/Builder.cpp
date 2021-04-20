@@ -12,6 +12,5 @@
 Builder::Builder(Runtime* runtimeIn)
 :runtime(runtimeIn)
 {
-	runtime->setInt(0, 0);	//set dp to zero. It will get allocated over by "dp" declaration below
 }
 

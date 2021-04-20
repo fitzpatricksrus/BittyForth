@@ -13,11 +13,13 @@ typedef union XData {
 	char c;
 	Num l;
 	DictionaryWord* w;
+	void* v;
 	
 	XData() {}
 	XData(long lIn) { l = lIn; }
-	XData(char* ptrIn) { ptr = ptrIn; }
-	XData(DictionaryWord* wIn) { w = wIn; }
+//	XData(char* ptrIn) { ptr = ptrIn; }
+//	XData(DictionaryWord* wIn) { w = wIn; }
+	XData(void* pIn) { v = pIn; }
 	operator long() { return l; }
 	operator char*() { return ptr; }
 	operator DictionaryWord*() { return w; }
