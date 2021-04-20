@@ -2,6 +2,8 @@
 #define DictionaryWord_hpp
 
 #include "OpCode.hpp"
+#include <string>
+#include "Types.hpp"
 
 class DictionaryWord {
 public:
@@ -13,7 +15,9 @@ public:
 	char name[32];
 	XData data[];
 	
-	IPtr firstInstructionPtr() { return (IPtr)data;}
+	IPtr firstInstructionPtr() { return (IPtr)data; }
+	
+	static DictionaryWord* create(Runtime* runtime, const std::string& name, OpCode opcode);
 };
 
 #endif /* DictionaryWord_hpp */

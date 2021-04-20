@@ -98,7 +98,7 @@ void Runtime::execute(DictionaryWord* newAbortWord, DictionaryWord* newIP) {
 	ip = newIP->firstInstructionPtr();
 	while (ip) {
 		DictionaryWord* currentWord = consumeNextInstruction();
-		currentWord->opcode.execute(this);
+		currentWord->opcode.execute(this, currentWord);
 	}
 }
 

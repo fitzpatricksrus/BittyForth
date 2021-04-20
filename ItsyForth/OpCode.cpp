@@ -49,7 +49,7 @@ char* getNextWordFromInput(Runtime* runtime, char delim) {
 	return padAddr;
 }
 
-int compareCountedString(Runtime* runtime, char* str1, char* str2) {
+int compareCountedString(char* str1, char* str2) {
 	int len = *str1;
 	int lenOther = *str2;
 	int end = (len < lenOther) ? len : lenOther;
@@ -216,7 +216,7 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 		while (thisWordAddr != 0 && !done) {
 			char* thisWordNameAddr = thisWordAddr->name;
 			
-			if (compareCountedString(runtime, stringAddr, thisWordNameAddr) != 0) {
+			if (CountedString::compare(stringAddr, thisWordNameAddr) != 0) {
 				thisWordAddr = thisWordAddr->previous;
 			} else {
 				done = true;
