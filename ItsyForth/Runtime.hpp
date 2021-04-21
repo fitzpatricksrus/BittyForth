@@ -64,5 +64,4 @@ T* Runtime::append(T value) {
 	return result;
 }
 
-
 #endif /* Runtime_hpp */

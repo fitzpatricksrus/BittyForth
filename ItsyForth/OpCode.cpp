@@ -3,6 +3,7 @@
 #include "DictionaryWord.hpp"
 #include "CountedString.hpp"
 #include "StructuredMemory.hpp"
+#include "Builder.hpp"
 #include <string>
 #include <iostream>
 
@@ -75,6 +76,7 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 	case DoSemicolon:
 		runtime->setInstructionPointer(runtime->popReturn());
 		break;
+	case Constant:
 	case DoConstant:
 		runtime->pushData(currentWord->data[0]);
 		break;
@@ -178,26 +180,11 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 		runtime->pushData(ndx);
 		break; }
 	case Word: { // ( char -- addr )
-		char* tibAddr = runtime->tibAddr;
-		char* inputAddr = tibAddr + runtime->tibInputOffset;
-		char* inputEndAddr = tibAddr + runtime->tibContentLength;
-		char* padAddr = runtime->dictionaryPtr;
-		char* outputAddr = padAddr + 1;	//leave room for length byte
+		char* pad = runtime->dictionaryPtr;
 		char delimeter = runtime->popData();
-		
-		//skip leading delimeters
-		while ((inputAddr < inputEndAddr) && (*inputAddr == delimeter)) {
-			inputAddr++;
-		}
-		
-		while ((inputAddr < inputEndAddr) && (*inputAddr != delimeter)) {
-			*outputAddr = *inputAddr;
-			outputAddr++;
-			inputAddr++;
-		}
-		
-		*padAddr = outputAddr - (padAddr + 1);
-		runtime->pushData((Num)padAddr);
+		std::string nameIn = Builder::getNextInputWord(runtime, delimeter);
+		CountedString::fromCString(nameIn, pad, padLength);
+		runtime->pushData(pad);
 		break; }
 	case Emit:	// ( char -- )
 		std::cout << (char)runtime->popData();
@@ -230,37 +217,26 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 			runtime->pushData(0L);
 		}
 		break; }
+	case SemiColon:
+		runtime->setInstructionPointer(runtime->popReturn());
+		break;
 	case Colon:	{	// compiling word
 		assert(runtime->compilerFlags == 0);
-		
 		// set state to compile
 		runtime->compilerFlags = -1;
-		
-		// -- create a new word --
-		Ptr newWordAddr = runtime->allocate(sizeof(DictionaryWord) - sizeof(DictionaryWord::name));
-		DictionaryWord* newWordPtr = (DictionaryWord*)newWordAddr;
-		
-		// set previous link
-		newWordPtr->previous = runtime->lastWord;
-		runtime->lastWord = newWordPtr;
-		
-		// clear all flags
-		newWordPtr->flags = 0;
-		
-		// this is a colon word
-		newWordPtr->opcode = Colon;
-		
-		// call Word to copy into memory where "name" field will be allocated.
-		OpCode(OpCode::Word).execute(runtime, currentWord);
-		
-		// allocate 32 bytes for the name field which will include the memory set by Word
-		runtime->allocate(sizeof(DictionaryWord::name));
+		std::string nameIn = Builder::getNextInputWord(runtime);
+		Builder::create(runtime, nameIn, OpCode::Colon, 0);
 		break; }
-	case SemiColon:
-	case Create:
+	case Create: {
+		// -- create a new word --
+		std::string nameIn = Builder::getNextInputWord(runtime);
+		Builder::create(runtime, nameIn, OpCode::Colon, 0);
+		break; }
 	case SemiCode:
-	case Constant:
-	case Interpret:
+		assert(runtime->compilerFlags != 0);
+		// clear state to compile
+		runtime->compilerFlags = 0;
+		break;
 	default: {
 		break; }
 	}

@@ -5,6 +5,8 @@ class Runtime;
 class DictionaryWord;
 
 struct OpCode {
+	static const int padLength = 256;
+
 	typedef enum Code {
 		DoColon,
 		DoSemicolon,
@@ -31,12 +33,11 @@ struct OpCode {
 		Word,
 		Emit,
 		Find,
-		Colon,
 		SemiColon,
+		Colon,
 		Create,
 		SemiCode,
-		Constant,
-		Interpret
+		Constant
 	} Code;
 	
 	OpCode(OpCode::Code op);

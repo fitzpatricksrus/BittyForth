@@ -3,6 +3,7 @@
 #include "OpCode.hpp"
 #include <stddef.h>
 #include "StructuredMemory.hpp"
+#include "Builder.hpp"
 
 Runtime::Runtime(int heapSize, int dataStackSize, int returnStackSize)
 : stackPtr(0), returnPtr(0), ip(0), currentWord(0)
@@ -38,6 +39,9 @@ void Runtime::reset() {
 	dictionaryPtr = memory;
 	lastWord = 0;
 	clearStacksAndIp();
+	
+	Builder::rebuildDictionary(this);
+
 }
 
 void Runtime::abort() {

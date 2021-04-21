@@ -16,8 +16,6 @@ public:
 	XData data[];
 	
 	IPtr firstInstructionPtr() { return (IPtr)data; }
-	
-	static DictionaryWord* create(Runtime* runtime, const std::string& name, OpCode opcode);
 };
 
 #endif /* DictionaryWord_hpp */
