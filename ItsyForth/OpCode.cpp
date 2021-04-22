@@ -6,6 +6,7 @@
 #include "Builder.hpp"
 #include <string>
 #include <iostream>
+#include "TermialIO.hpp"
 
 int digitValue(int base, char c) {
 	if (c >= '0' && c <= '9') {
@@ -23,43 +24,6 @@ int digitValue(int base, char c) {
 	} else {
 		return -1;
 	}
-}
-
-char* getNextWordFromInput(Runtime* runtime, char delim) {
-	char* tibAddr = runtime->tibAddr;
-	Num tibLength = runtime->tibContentLength;
-	Num tibInOffset = runtime->tibInputOffset;
-	char delimeter = runtime->popData();
-	char* padAddr = runtime->dictionaryPtr;
-	char* outputAddr = runtime->dictionaryPtr + 1;
-	
-	int len = 0;
-	bool done = false;
-	while (tibInOffset < tibLength && !done) {
-		char c = tibAddr[tibInOffset];
-		*outputAddr = c;
-		if (c == delimeter) {
-			done = true;
-		} else {
-			tibInOffset++;
-			outputAddr++;
-			len++;
-		}
-	}
-	*padAddr = len;
-	return padAddr;
-}
-
-int compareCountedString(char* str1, char* str2) {
-	int len = *str1;
-	int lenOther = *str2;
-	int end = (len < lenOther) ? len : lenOther;
-	for (int i = 1; i <= end; i++) {
-		if (str1[i] != str2[i]) {
-			return str1[i] - str2[i];
-		}
-	}
-	return len - lenOther;
 }
 
 OpCode::OpCode(OpCode::Code codeIn)
@@ -167,28 +131,32 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 		runtime->pushData(len);
 		break; }
 	case Accept: {	//( addr len -- len2 )
-		std::string str;
-		std::getline(std::cin, str);
-		int inputLen = (long)str.length();
 		int maxLen = runtime->popData();
-		maxLen = (maxLen <= inputLen) ? maxLen: inputLen;
 		char* addr = (char*)runtime->popData();
 		long ndx;
-		for (ndx = 0; ndx < maxLen; ndx++) {
-			addr[ndx] = str[ndx];
-		}
+		do {
+			char c = runtime->read();
+			for (ndx = 0; ndx < maxLen && c != '\n'; ndx++) {
+				addr[ndx] = c;
+				c = runtime->read();
+			}
+		} while (ndx == 0);	//skip empty lines
+//		if (ndx >= maxLen) {
+			// hey jf - this overflowed the input buffer
+			// do you want to print a message on the
+			// terminal and flush the remaining input?
+//		}
 		runtime->pushData(ndx);
 		break; }
 	case Word: { // ( char -- addr )
 		char* pad = runtime->dictionaryPtr;
 		char delimeter = runtime->popData();
-		std::string nameIn = Builder::getNextInputWord(runtime, delimeter);
+		std::string nameIn = Builder(runtime).getNextInputWord(delimeter);
 		CountedString::fromCString(nameIn, pad, padLength);
 		runtime->pushData(pad);
 		break; }
 	case Emit:	// ( char -- )
-		std::cout << (char)runtime->popData();
-		std::cout.flush();
+		runtime->emit((char)runtime->popData());
 		break;
 	case Find: {
 		// addr -- addr2 flag  look up word in the dictionary
@@ -224,19 +192,12 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 		assert(runtime->compilerFlags == 0);
 		// set state to compile
 		runtime->compilerFlags = -1;
-		std::string nameIn = Builder::getNextInputWord(runtime);
-		Builder::create(runtime, nameIn, OpCode::Colon, 0);
+		Builder(runtime).createWord(OpCode::Colon);
 		break; }
 	case Create: {
 		// -- create a new word --
-		std::string nameIn = Builder::getNextInputWord(runtime);
-		Builder::create(runtime, nameIn, OpCode::Colon, 0);
+		Builder(runtime).createWord(OpCode::Colon);
 		break; }
-	case SemiCode:
-		assert(runtime->compilerFlags != 0);
-		// clear state to compile
-		runtime->compilerFlags = 0;
-		break;
 	default: {
 		break; }
 	}

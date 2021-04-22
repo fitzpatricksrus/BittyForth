@@ -2,7 +2,9 @@
 #define Runtime_hpp
 
 #include <stddef.h>
+#include <string.h>
 #include "Types.hpp"
+#include "Terminal.hpp"
 
 class DictionaryWord;
 
@@ -27,12 +29,15 @@ public:
 	DictionaryWord* consumeNextInstruction();
 	IPtr getInstructionPointer();
 	void setInstructionPointer(IPtr newIP);
-			
+
 	void execute(DictionaryWord* newAbortWord, DictionaryWord* newIP /* must be colon word */);
 	
 	Ptr allocate(int bytes);
 	
 	template <typename T> T* append(T value);
+	
+	void emit(char c) { terminal.emit(c); }
+	char read() { return terminal.read(); }
 
 	DictionaryWord* abortWord;
 	Ptr dictionaryPtr;
@@ -55,6 +60,7 @@ private:
 	int returnPtr;
 	IPtr ip;
 	DictionaryWord* currentWord;
+	Terminal terminal;
 };
 
 template <typename T>

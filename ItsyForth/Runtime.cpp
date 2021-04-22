@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include "StructuredMemory.hpp"
 #include "Builder.hpp"
+#include "CoreDictionary.hpp"
 
 Runtime::Runtime(int heapSize, int dataStackSize, int returnStackSize)
 : stackPtr(0), returnPtr(0), ip(0), currentWord(0)
@@ -40,7 +41,7 @@ void Runtime::reset() {
 	lastWord = 0;
 	clearStacksAndIp();
 	
-	Builder::rebuildDictionary(this);
+	CoreDictionary(this).rebuildDictionary();
 
 }
 

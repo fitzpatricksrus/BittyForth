@@ -12,63 +12,13 @@
 #include "DictionaryWord.hpp"
 #include "CountedString.hpp"
 
-void Builder::rebuildDictionary(Runtime* runtime) {
-	// recreate the system dictionary entries
-	
-	// system words
-	Builder::create(runtime, "(doColon)", OpCode::DoColon);
-	DictionaryWord* semicolonWord = Builder::create(runtime, "(doSemicolon)", OpCode::DoSemicolon);
-	Builder::create(runtime, "(doConstant)", OpCode::DoConstant);
-	Builder::create(runtime, "(doVariable)", OpCode::DoVariable);
-	create(runtime, "abort", OpCode::Abort);
-	create(runtime, ",", OpCode::Comma);
-	create(runtime, "(lit)", OpCode::Lit);
-	create(runtime, "rot", OpCode::Rot);
-	create(runtime, "drop", OpCode::Drop);
-	create(runtime, "dup", OpCode::Dup);
-	create(runtime, "swap", OpCode::Swap);
-	create(runtime, "+", OpCode::Plus);
-	create(runtime, "=", OpCode::Equals);
-	DictionaryWord* atWord = create(runtime, "@", OpCode::At);
-	create(runtime, "!", OpCode::Put);
-	create(runtime, "(0branch)", OpCode::ZeroBranch);
-	create(runtime, "(branch)", OpCode::Branch);
-	create(runtime, "execute", OpCode::Execute);
-	create(runtime, "exit", OpCode::Exit);
-	create(runtime, "count", OpCode::Count);
-	create(runtime, ">number", OpCode::ToNumber);
-	create(runtime, "accept", OpCode::Accept);
-	create(runtime, "word", OpCode::Word);
-	create(runtime, "emit", OpCode::Emit);
-	create(runtime, "find", OpCode::Find);
-	create(runtime, ":", OpCode::Colon);
-	create(runtime, ";", OpCode::SemiColon);
-	create(runtime, "constant", OpCode::Constant);
-
-	// system variables
-	create(runtime, "abortWord", OpCode::Constant);
-	runtime->append(&runtime->abortWord);
-	create(runtime, "dp", OpCode::Constant);
-	runtime->append(&runtime->dictionaryPtr);
-	create(runtime, "base", OpCode::Constant);
-	runtime->append(&runtime->numberBase);
-	DictionaryWord* tibAddrWord = create(runtime, "tibAddr", OpCode::Constant);
-	runtime->append(&runtime->tibAddr);
-	create(runtime, "tib", OpCode::Colon);
-		runtime->append(tibAddrWord);
-		runtime->append(atWord);
-		runtime->append(semicolonWord);
-	create(runtime, "#tib", OpCode::Constant);
-	runtime->append(&runtime->tibContentLength);
-	create(runtime, ">in", OpCode::Constant);
-	runtime->append(&runtime->tibInputOffset);
-	create(runtime, "lastWord", OpCode::Constant);
-	runtime->append(&runtime->lastWord);
-	create(runtime, "compilerFlags", OpCode::Constant);
-	runtime->append(&runtime->compilerFlags);
+Builder::Builder(Runtime* runtimeIn) {
+	runtime = runtimeIn;
+	marksIdx = 0;
 }
 
-std::string Builder::getNextInputWord(Runtime* runtime, char delimeter) {
+
+std::string Builder::getNextInputWord(char delimeter) {
 	std::string result;
 	char* tibAddr = runtime->tibAddr;
 	char* inputAddr = tibAddr + runtime->tibInputOffset;
@@ -89,44 +39,112 @@ std::string Builder::getNextInputWord(Runtime* runtime, char delimeter) {
 	return result;
 }
 
-DictionaryWord* Builder::create(Runtime* runtime, const std::string& name, OpCode opcode, Num flags) {
+DictionaryWord* Builder::findWord(const std::string& name) {
+	DictionaryWord* word = runtime->lastWord;
+	char nameCountedString[32];
+	CountedString::fromCString(name, nameCountedString, sizeof(nameCountedString));
+	bool done = false;
+	while (word != 0 && !done) {
+		if (CountedString::compare(nameCountedString, word->name) != 0) {
+			word = word->previous;
+		} else {
+			done = true;
+		}
+	}
+	return word;
+}
+
+DictionaryWord* Builder::createWord(OpCode opcode, Num flags) {
+	return createWord(getNextInputWord(' '), opcode, flags);
+}
+
+DictionaryWord* Builder::createWord(const std::string& name, OpCode opcode, Num flags) {
 	DictionaryWord* result = (DictionaryWord*)runtime->allocate(sizeof(DictionaryWord));
 	result->previous = runtime->lastWord;
 	runtime->lastWord = result;
 	result->flags = flags;
 	result->opcode = opcode;
 	CountedString::fromCString(name, result->name, sizeof(result->name));
+	return result;
+}
+
+XPtr Builder::append(const XData& data) {
+	XData* result = (XData*)runtime->allocate(sizeof(data));
+	*result = data;
+	return (XPtr)result;
+}
+
+XPtr Builder::append(const std::string &wordName) {
+	return append(findWord(wordName));
+}
+
+void Builder::compileBegin() {
+	pushMark((XPtr)runtime->dictionaryPtr);
+}
+
+void Builder::compileIf() {
+	append("0branch");
+	pushMark(append((XPtr)nullptr));
+}
+
+void Builder::compileElse() {
+	XPtr ifMark = popMark();
+	append("branch");
+	pushMark(append((XPtr)nullptr));
+	*ifMark = runtime->dictionaryPtr;
+}
+
+void Builder::compileEndif() {
+	XPtr ifMark = popMark();
+	*ifMark = runtime->dictionaryPtr;
+}
+
+void Builder::compileAgain() {
+	append("branch");
+	append(popMark());
+}
+
+void Builder::pushMark() {
+	pushMark((XPtr)runtime->dictionaryPtr);
+}
+
+void Builder::pushMark(XPtr m) {
+	marks[marksIdx++] = m;
+}
+
+XPtr Builder::popMark() {
+	return marks[--marksIdx];
 }
 
 	/*
 		: interpret
-		begin
+		begin	//0
 			#tib @ >in @ =
-			if
+			if  //1
 				tib 50 accept #tib ! 0 >in !
-			then
+			then //2
 			32 word find dup
-			if
+			if	//3
 				state @ =
-				if
+				if	//4
 					,
-				else
+				else	//5
 					execute
-				then
-			else
+				then	//6
+			else	//7
 				dup rot count >number
-				if
+				if	//8
 					state @
-					if
+					if	//9
 						last @ dup @ last ! dp !
-					then
+					then	//10
 					abort
-				then
+				then	//11
 				drop drop state @
-				if
+				if	//12
 					['] lit , ,
-				then
-			then
-		again
+				then	//13
+			then	//14
+		again	//15
 		;
 */

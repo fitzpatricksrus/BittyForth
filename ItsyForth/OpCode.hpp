@@ -36,7 +36,6 @@ struct OpCode {
 		SemiColon,
 		Colon,
 		Create,
-		SemiCode,
 		Constant
 	} Code;
 	
