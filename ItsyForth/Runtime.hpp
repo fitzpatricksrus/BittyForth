@@ -10,7 +10,7 @@ class DictionaryWord;
 
 class Runtime {
 public:
-	Runtime(int heapSize, int dataStackSize = 256, int returnStackSize = 256);
+	Runtime(int heapSize = 16384, int dataStackSize = 256, int returnStackSize = 256);
 	~Runtime();
 	
 	void reset();
@@ -30,7 +30,7 @@ public:
 	IPtr getInstructionPointer();
 	void setInstructionPointer(IPtr newIP);
 
-	void execute(DictionaryWord* newAbortWord, DictionaryWord* newIP /* must be colon word */);
+	void execute(DictionaryWord* newAbortWord, DictionaryWord* wordToExecute /* must be colon word */);
 	
 	Ptr allocate(int bytes);
 	

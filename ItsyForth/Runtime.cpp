@@ -96,11 +96,11 @@ void Runtime::setInstructionPointer(IPtr newIP) {
 	ip = newIP;
 }
 
-void Runtime::execute(DictionaryWord* newAbortWord, DictionaryWord* newIP) {
+void Runtime::execute(DictionaryWord* newAbortWord, DictionaryWord* wordToExecute) {
 	reset();
 	abortWord = newAbortWord;
 	pushReturn(0L);
-	ip = newIP->firstInstructionPtr();
+	ip = wordToExecute->firstInstructionPtr();
 	while (ip) {
 		DictionaryWord* currentWord = consumeNextInstruction();
 		currentWord->opcode.execute(this, currentWord);

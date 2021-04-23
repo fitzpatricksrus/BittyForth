@@ -8,6 +8,10 @@ CoreDictionary::CoreDictionary(Runtime* runtimeIn) {
 	runtime = runtimeIn;
 }
 
+DictionaryWord* CoreDictionary::find(const std::string& name) {
+	return Builder(runtime).findWord(name);
+}
+
 void CoreDictionary::rebuildDictionary() {
 	// recreate the system dictionary entries
 	Builder builder(runtime);
