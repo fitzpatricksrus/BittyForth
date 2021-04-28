@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0FA3F3ED2639D65400DE9E0B /* Debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA3F3EB2639D65400DE9E0B /* Debug.cpp */; };
 		0FA47FE3262A6B2E00C3D147 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA47FE2262A6B2E00C3D147 /* main.cpp */; };
 		0FA47FEC262B4D3100C3D147 /* Runtime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA47FEA262B4D3100C3D147 /* Runtime.cpp */; };
 		0FA47FF0262B4DC300C3D147 /* OpCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA47FEE262B4DC300C3D147 /* OpCode.cpp */; };
@@ -30,6 +31,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0FA3F3EB2639D65400DE9E0B /* Debug.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Debug.cpp; sourceTree = "<group>"; };
+		0FA3F3EC2639D65400DE9E0B /* Debug.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Debug.hpp; sourceTree = "<group>"; };
 		0FA47FDF262A6B2E00C3D147 /* ItsyForth */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ItsyForth; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FA47FE2262A6B2E00C3D147 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		0FA47FEA262B4D3100C3D147 /* Runtime.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Runtime.cpp; sourceTree = "<group>"; };
@@ -87,6 +90,8 @@
 				0FCE626A262F49D200CA85EC /* DictionaryWord.cpp */,
 				0FA47FF3262B4DFB00C3D147 /* DictionaryWord.hpp */,
 				0FA47FF6262B525400C3D147 /* Builder.cpp */,
+				0FA3F3EB2639D65400DE9E0B /* Debug.cpp */,
+				0FA3F3EC2639D65400DE9E0B /* Debug.hpp */,
 				0FA47FF7262B525400C3D147 /* Builder.hpp */,
 				0FCE6264262E7D9000CA85EC /* Types.hpp */,
 				0FCE626D262F4C1A00CA85EC /* CountedString.cpp */,
@@ -160,6 +165,7 @@
 				0FCE62742630F26D00CA85EC /* CoreDictionary.cpp in Sources */,
 				0FCE626B262F49D200CA85EC /* DictionaryWord.cpp in Sources */,
 				0FA47FEC262B4D3100C3D147 /* Runtime.cpp in Sources */,
+				0FA3F3ED2639D65400DE9E0B /* Debug.cpp in Sources */,
 				0FCE626F262F4C1A00CA85EC /* CountedString.cpp in Sources */,
 				0FA47FF0262B4DC300C3D147 /* OpCode.cpp in Sources */,
 				0FA47FE3262A6B2E00C3D147 /* main.cpp in Sources */,

@@ -5,9 +5,7 @@
 
 int main(int argc, const char * argv[]) {
 	Runtime runtime;
-	runtime.reset();
 	CoreDictionary dictionary(&runtime);
-	dictionary.rebuildDictionary();
 	
 	DictionaryWord* interpreter = dictionary.find("interpret");
 	runtime.execute(interpreter, interpreter);

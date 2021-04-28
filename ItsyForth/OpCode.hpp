@@ -1,6 +1,7 @@
 #ifndef OpCode_hpp
 #define OpCode_hpp
 
+#include <string>
 class Runtime;
 class DictionaryWord;
 
@@ -40,6 +41,8 @@ struct OpCode {
 	} Code;
 	
 	OpCode(OpCode::Code op);
+	operator std::string() const;
+	std::string toString() const;
 	
 	void execute(Runtime* runtime, DictionaryWord* currentWord);
 

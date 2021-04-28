@@ -11,6 +11,19 @@
 #include "OpCode.hpp"
 #include "DictionaryWord.hpp"
 #include "CountedString.hpp"
+#include "Debug.hpp"
+
+static void dbg(long addr, std::string msg) {
+	Debug::print(">> " + std::to_string((long)addr) + ": " + msg);
+}
+
+static void dbg(void* addr, std::string msg) {
+	dbg((long)addr, msg);
+}
+
+static void dbg(std::string msg) {
+	Debug::print(">> " + msg);
+}
 
 Builder::Builder(Runtime* runtimeIn) {
 	runtime = runtimeIn;
@@ -51,6 +64,7 @@ DictionaryWord* Builder::findWord(const std::string& name) {
 			done = true;
 		}
 	}
+	if (word == nullptr) dbg("Word '"+name+"' not found in dictionary");
 	return word;
 }
 
@@ -65,17 +79,29 @@ DictionaryWord* Builder::createWord(const std::string& name, OpCode opcode, Num 
 	result->flags = flags;
 	result->opcode = opcode;
 	CountedString::fromCString(name, result->name, sizeof(result->name));
+	
+	dbg(result, opcode.toString() + " " + name);
+	
 	return result;
 }
 
 XPtr Builder::append(const XData& data) {
 	XData* result = (XData*)runtime->allocate(sizeof(data));
 	*result = data;
+
+	dbg(result, std::to_string(data.l));
+
 	return (XPtr)result;
 }
 
 XPtr Builder::append(const std::string &wordName) {
-	return append(findWord(wordName));
+	XData data(findWord(wordName));
+	XData* result = (XData*)runtime->allocate(sizeof(data));
+	*result = data;
+
+	dbg(result, wordName + "(" + std::to_string(data.l) +")");
+
+	return (XPtr)result;
 }
 
 void Builder::compileBegin() {
@@ -83,13 +109,13 @@ void Builder::compileBegin() {
 }
 
 void Builder::compileIf() {
-	append("0branch");
+	append("(0branch)");
 	pushMark(append((XPtr)nullptr));
 }
 
 void Builder::compileElse() {
 	XPtr ifMark = popMark();
-	append("branch");
+	append("(branch)");
 	pushMark(append((XPtr)nullptr));
 	*ifMark = runtime->dictionaryPtr;
 }
@@ -100,7 +126,7 @@ void Builder::compileEndif() {
 }
 
 void Builder::compileAgain() {
-	append("branch");
+	append("(branch)");
 	append(popMark());
 }
 

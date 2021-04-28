@@ -97,7 +97,6 @@ void Runtime::setInstructionPointer(IPtr newIP) {
 }
 
 void Runtime::execute(DictionaryWord* newAbortWord, DictionaryWord* wordToExecute) {
-	reset();
 	abortWord = newAbortWord;
 	pushReturn(0L);
 	ip = wordToExecute->firstInstructionPtr();

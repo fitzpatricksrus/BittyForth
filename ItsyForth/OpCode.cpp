@@ -31,6 +31,45 @@ OpCode::OpCode(OpCode::Code codeIn)
 {
 }
 
+OpCode::operator std::string() const {
+	return toString();
+}
+
+std::string OpCode::toString() const {
+	static const std::string names[] = {
+		"DoColon",
+		"DoSemicolon",
+		"DoConstant",
+		"DoVariable",
+		"Abort",
+		"Comma",
+		"Lit",
+		"Rot",
+		"Drop",
+		"Dup",
+		"Swap",
+		"Plus",
+		"Equals",
+		"At",
+		"Put",
+		"ZeroBranch",
+		"Branch",
+		"Execute",
+		"Exit",
+		"Count",
+		"ToNumber",
+		"Accept",
+		"Word",
+		"Emit",
+		"Find",
+		"SemiColon",
+		"Colon",
+		"Create",
+		"Constant"
+	};
+	return names[code];
+}
+
 void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 	switch (code) {
 	case DoColon: {
