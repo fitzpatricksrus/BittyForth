@@ -73,7 +73,7 @@ DictionaryWord* Builder::createWord(const std::string& name, OpCode opcode, Num 
 }
 
 XPtr Builder::append(long value) {
-	return append(value);
+	return append((void*)value);
 }
 
 XPtr Builder::append(void* addr) {
@@ -99,7 +99,7 @@ XPtr Builder::append(const std::string &wordName) {
 	XData* result = (XData*)runtime->allocate(sizeof(data));
 	*result = data;
 
-	runtime->dbg(result, wordName + "(" + std::to_string(runtime->dbgOffset(data.ptr)) +")");
+	runtime->dbg(result, "   " + wordName + " (" + std::to_string(runtime->dbgOffset(data.ptr)) +")");
 
 	return (XPtr)result;
 }

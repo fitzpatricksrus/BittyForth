@@ -40,11 +40,17 @@ Runtime::~Runtime() {
 
 void Runtime::clearStacksAndIp() {
 	numberBaseAddr = (Num*)allocate(sizeof(*numberBaseAddr));
+		dbg(numberBaseAddr, "numberBaseAddr");
 	tibContentLengthAddr = (Num*)allocate(sizeof(*tibContentLengthAddr));
+		dbg(tibContentLengthAddr, "tibContentLengthAddr");
 	tibInputOffsetAddr = (Num*)allocate(sizeof(*tibInputOffsetAddr));
+		dbg(tibInputOffsetAddr, "tibInputOffsetAddr");
 	compilerFlagsAddr = (Num*)allocate(sizeof(*compilerFlagsAddr));
+		dbg(compilerFlagsAddr, "compilerFlagsAddr");
 	char* tibAddr = (char*)allocate(sizeof(char) * 256);
+		dbg(tibAddr, "tibAddr");
 	tibAddrAddr = (char**)allocate(sizeof(*tibAddrAddr));
+		dbg(tibAddrAddr, "tibAddrAddr");
 
 	*numberBaseAddr = 10;
 	*tibContentLengthAddr = 0;
@@ -61,10 +67,12 @@ void Runtime::clearStacksAndIp() {
 
 void Runtime::reset() {
 	dictionaryPtrAddr = (char**)memory;
+		dbg(dictionaryPtrAddr, "dictionaryPtrAddr");
 	*dictionaryPtrAddr = memory + sizeof(*dictionaryPtrAddr);
 	abortWordPtrAddr = (DictionaryWord**)allocate(sizeof(*abortWordPtrAddr));
-//	dictionaryPtrAddr = (DictionaryWord**)allocate(sizeof(*dictionaryPtrAddr));
+		dbg(abortWordPtrAddr, "abortWordPtrAddr");
 	lastWordPtrAddr = (DictionaryWord**)allocate(sizeof(*lastWordPtrAddr));
+		dbg(lastWordPtrAddr, "lastWordPtrAddr");
 	clearStacksAndIp();
 	
 	CoreDictionary(this).rebuildDictionary();
