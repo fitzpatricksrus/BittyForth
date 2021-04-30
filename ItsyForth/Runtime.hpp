@@ -10,6 +10,11 @@ class DictionaryWord;
 
 class Runtime {
 public:
+//	void dbg(long addr, std::string msg);
+	void dbg(void* addr, std::string msg);
+	void dbg(std::string msg);
+	long dbgOffset(void* addr);
+
 	Runtime(int heapSize = 16384, int dataStackSize = 256, int returnStackSize = 256);
 	~Runtime();
 	
@@ -32,24 +37,55 @@ public:
 
 	void execute(DictionaryWord* newAbortWord, DictionaryWord* wordToExecute /* must be colon word */);
 	
-	Ptr allocate(int bytes);
-	
-	template <typename T> T* append(T value);
-	
 	void emit(char c) { terminal.emit(c); }
 	char read() { return terminal.read(); }
 
-	DictionaryWord* abortWord;
-	Ptr dictionaryPtr;
-	Num numberBase;
-	char* tibAddr;
-	Num tibContentLength;
-	Num tibInputOffset;
-	DictionaryWord* lastWord;
-	Num compilerFlags;
-	char tib[256];
+	Ptr allocate(int bytes);
+	template <typename T> T* append(T value);
 	
+	DictionaryWord* getAbortWordPtr() { return *abortWordPtrAddr; }
+	DictionaryWord** getAbortWordPtrAddr() { return abortWordPtrAddr; }
+	void setAbortWordPtr(DictionaryWord* ptr) { *abortWordPtrAddr = ptr; }
+
+	char* getDictionaryPtr() { return *dictionaryPtrAddr; }
+	char** getDictionaryPtrAddr() { return dictionaryPtrAddr; }
+	void setDictionaryPtr(char* ptr) { *dictionaryPtrAddr = ptr; }
+	
+	DictionaryWord* getLastWordPtr() { return *lastWordPtrAddr; }
+	DictionaryWord** getLastWordPtrAddr() { return lastWordPtrAddr; }
+	void setLastWordPtr(DictionaryWord* ptr) { *lastWordPtrAddr = ptr; }
+	
+	Num getNumberBase() { return *numberBaseAddr; }
+	Num* getNumberBaseAddr() { return numberBaseAddr; }
+	void setNumberBase(Num ptr) { *numberBaseAddr = ptr; }
+	
+	Num getTibContentLength() { return *tibContentLengthAddr; }
+	Num* getTibContentLengthAddr() { return tibContentLengthAddr; }
+	void setTibContentLength(Num ptr) { *tibContentLengthAddr = ptr; }
+	
+	Num getTibInputOffset() { return *tibInputOffsetAddr; }
+	Num* getTibInputOffsetAddr() { return tibInputOffsetAddr; }
+	void setTibInputOffset(Num ptr) { *tibInputOffsetAddr = ptr; }
+	
+	Num getCompilerFlags() { return *compilerFlagsAddr; }
+	Num* getCompilerFlagsAddr() { return compilerFlagsAddr; }
+	void setCompilerFlags(Num ptr) { *compilerFlagsAddr = ptr; }
+	
+	char* getTibAddr() { return *tibAddrAddr; }
+	void setTibAddr(char* addr) { *tibAddrAddr = addr; };
+
+	char** getTibAddrAddr() { return tibAddrAddr; }
+
 private:
+	DictionaryWord** abortWordPtrAddr;
+	char** dictionaryPtrAddr;
+	DictionaryWord** lastWordPtrAddr;
+	Num* numberBaseAddr;
+	Num* tibContentLengthAddr;
+	Num* tibInputOffsetAddr;
+	Num* compilerFlagsAddr;
+	char** tibAddrAddr;
+
 	void clearStacksAndIp();
 
 	char* memory;

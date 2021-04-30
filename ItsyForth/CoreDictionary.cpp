@@ -48,25 +48,25 @@ void CoreDictionary::rebuildDictionary() {
 
 	// system variables
 	builder.createWord("abortWord", OpCode::Constant);
-	builder.append(&runtime->abortWord);
+	builder.append(runtime->getAbortWordPtrAddr());
 	builder.createWord("dp", OpCode::Constant);
-	builder.append(&runtime->dictionaryPtr);
+	builder.append(runtime->getDictionaryPtrAddr());
 	builder.createWord("base", OpCode::Constant);
-	builder.append(&runtime->numberBase);
+	builder.append(runtime->getNumberBaseAddr());
 	builder.createWord("tibAddr", OpCode::Constant);
-	builder.append(&runtime->tibAddr);
+	builder.append(runtime->getTibAddrAddr());
 	builder.createWord("tib", OpCode::Colon);
 		builder.append("tibAddr");
 		builder.append("@");
 		builder.append(";");
 	builder.createWord("#tib", OpCode::Constant);
-	builder.append(&runtime->tibContentLength);
+	builder.append(runtime->getTibContentLengthAddr());
 	builder.createWord(">in", OpCode::Constant);
-	builder.append(&runtime->tibInputOffset);
+	builder.append(runtime->getTibInputOffsetAddr());
 	builder.createWord("lastWord", OpCode::Constant);
-	builder.append(&runtime->lastWord);
+	builder.append(runtime->getLastWordPtrAddr());
 	builder.createWord("compilerFlags", OpCode::Constant);
-	builder.append(&runtime->compilerFlags);
+	builder.append(runtime->getCompilerFlagsAddr());
 	
 	/*
 		: interpret

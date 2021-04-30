@@ -24,6 +24,8 @@ public:
 	
 	DictionaryWord* createWord(OpCode opcode, Num flags = 0);
 	DictionaryWord* createWord(const std::string& name, OpCode opcode, Num flags = 0);
+	XPtr append(long value);
+	XPtr append(void* addr);
 	XPtr append(const XData& data);
 	XPtr append(const std::string& wordName);
 	

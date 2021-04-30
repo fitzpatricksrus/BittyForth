@@ -153,7 +153,7 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 		int len = runtime->popData();
 		char* addr = runtime->popData();
 		Num dval = runtime->popData();
-		int base = runtime->numberBase;
+		int base = runtime->getNumberBase();
 		bool done = false;
 		while (len > 0 && !done) {
 			int val = digitValue(base, *addr);
@@ -188,7 +188,7 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 		runtime->pushData(ndx);
 		break; }
 	case Word: { // ( char -- addr )
-		char* pad = runtime->dictionaryPtr;
+		char* pad = (char*)runtime->getDictionaryPtr();
 		char delimeter = runtime->popData();
 		std::string nameIn = Builder(runtime).getNextInputWord(delimeter);
 		CountedString::fromCString(nameIn, pad, padLength);
@@ -205,7 +205,7 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 		// flag =  1, addr2 = call address   --> word is immediate
 		// flag = -1, addr2 = call address   --> word is not immediate
 		char* stringAddr = runtime->popData();
-		DictionaryWord* thisWordAddr = runtime->lastWord;
+		DictionaryWord* thisWordAddr = runtime->getLastWordPtr();
 		bool done = false;
 		while (thisWordAddr != 0 && !done) {
 			char* thisWordNameAddr = thisWordAddr->name;
@@ -228,9 +228,9 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 		runtime->setInstructionPointer(runtime->popReturn());
 		break;
 	case Colon:	{	// compiling word
-		assert(runtime->compilerFlags == 0);
+		assert(runtime->getCompilerFlags() == 0);
 		// set state to compile
-		runtime->compilerFlags = -1;
+		runtime->setCompilerFlags(-1);
 		Builder(runtime).createWord(OpCode::Colon);
 		break; }
 	case Create: {

@@ -5,6 +5,23 @@
 #include "StructuredMemory.hpp"
 #include "Builder.hpp"
 #include "CoreDictionary.hpp"
+#include "Debug.hpp"
+
+//void Runtime::dbg(long value, std::string msg) {
+//	Debug::print(">> " + std::to_string(value) + ": " + msg);
+//}
+
+void Runtime::dbg(void* addr, std::string msg) {
+	Debug::print(">> " + std::to_string((long)(((char*)addr) - memory)) + ": " + msg);
+}
+
+void Runtime::dbg(std::string msg) {
+	Debug::print(">> " + msg);
+}
+
+long Runtime::dbgOffset(void* addr) {
+	return ((char*)addr) - memory;
+}
 
 Runtime::Runtime(int heapSize, int dataStackSize, int returnStackSize)
 : stackPtr(0), returnPtr(0), ip(0), currentWord(0)
@@ -22,12 +39,19 @@ Runtime::~Runtime() {
 }
 
 void Runtime::clearStacksAndIp() {
-	numberBase = 10;
-	tibAddr = tib;
-	tibContentLength = 0;
-	tibInputOffset = 0;
-	compilerFlags = 0;
-	tib[0] = 0;
+	numberBaseAddr = (Num*)allocate(sizeof(*numberBaseAddr));
+	tibContentLengthAddr = (Num*)allocate(sizeof(*tibContentLengthAddr));
+	tibInputOffsetAddr = (Num*)allocate(sizeof(*tibInputOffsetAddr));
+	compilerFlagsAddr = (Num*)allocate(sizeof(*compilerFlagsAddr));
+	char* tibAddr = (char*)allocate(sizeof(char) * 256);
+	tibAddrAddr = (char**)allocate(sizeof(*tibAddrAddr));
+
+	*numberBaseAddr = 10;
+	*tibContentLengthAddr = 0;
+	*tibInputOffsetAddr = 0;
+	*compilerFlagsAddr = 0;
+	tibAddr[0] = 0;
+	*tibAddrAddr = tibAddr;
 
 	stackPtr = 0;
 	returnPtr = 0;
@@ -36,18 +60,19 @@ void Runtime::clearStacksAndIp() {
 }
 
 void Runtime::reset() {
-	abortWord = 0;
-	dictionaryPtr = memory;
-	lastWord = 0;
+	dictionaryPtrAddr = (char**)memory;
+	*dictionaryPtrAddr = memory + sizeof(*dictionaryPtrAddr);
+	abortWordPtrAddr = (DictionaryWord**)allocate(sizeof(*abortWordPtrAddr));
+//	dictionaryPtrAddr = (DictionaryWord**)allocate(sizeof(*dictionaryPtrAddr));
+	lastWordPtrAddr = (DictionaryWord**)allocate(sizeof(*lastWordPtrAddr));
 	clearStacksAndIp();
 	
 	CoreDictionary(this).rebuildDictionary();
-
 }
 
 void Runtime::abort() {
 	clearStacksAndIp();
-	ip = abortWord->firstInstructionPtr();
+	ip = (*abortWordPtrAddr)->firstInstructionPtr();
 }
 
 XData Runtime::tos() {
@@ -97,7 +122,7 @@ void Runtime::setInstructionPointer(IPtr newIP) {
 }
 
 void Runtime::execute(DictionaryWord* newAbortWord, DictionaryWord* wordToExecute) {
-	abortWord = newAbortWord;
+	(*abortWordPtrAddr) = newAbortWord;
 	pushReturn(0L);
 	ip = wordToExecute->firstInstructionPtr();
 	while (ip) {
@@ -107,8 +132,9 @@ void Runtime::execute(DictionaryWord* newAbortWord, DictionaryWord* wordToExecut
 }
 
 Ptr Runtime::allocate(int bytes) {
-	Ptr result = dictionaryPtr;
-	dictionaryPtr += bytes;
-	return result;
+	Ptr result = *dictionaryPtrAddr;
+	Ptr addr = (*dictionaryPtrAddr);
+	addr += bytes;
+	(*dictionaryPtrAddr) = addr;
+ 	return result;
 }
-
