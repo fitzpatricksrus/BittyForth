@@ -14,7 +14,6 @@
 		0FA47FF8262B525400C3D147 /* Builder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA47FF6262B525400C3D147 /* Builder.cpp */; };
 		0FCE626B262F49D200CA85EC /* DictionaryWord.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FCE626A262F49D200CA85EC /* DictionaryWord.cpp */; };
 		0FCE626F262F4C1A00CA85EC /* CountedString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FCE626D262F4C1A00CA85EC /* CountedString.cpp */; };
-		0FCE62742630F26D00CA85EC /* CoreDictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FCE62722630F26D00CA85EC /* CoreDictionary.cpp */; };
 		0FCE627D2630F80000CA85EC /* Terminal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FCE627B2630F80000CA85EC /* Terminal.cpp */; };
 /* End PBXBuildFile section */
 
@@ -46,8 +45,6 @@
 		0FCE626A262F49D200CA85EC /* DictionaryWord.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DictionaryWord.cpp; sourceTree = "<group>"; };
 		0FCE626D262F4C1A00CA85EC /* CountedString.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CountedString.cpp; sourceTree = "<group>"; };
 		0FCE626E262F4C1A00CA85EC /* CountedString.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CountedString.hpp; sourceTree = "<group>"; };
-		0FCE62722630F26D00CA85EC /* CoreDictionary.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CoreDictionary.cpp; sourceTree = "<group>"; };
-		0FCE62732630F26D00CA85EC /* CoreDictionary.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CoreDictionary.hpp; sourceTree = "<group>"; };
 		0FCE627B2630F80000CA85EC /* Terminal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Terminal.cpp; sourceTree = "<group>"; };
 		0FCE627C2630F80000CA85EC /* Terminal.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Terminal.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -96,8 +93,6 @@
 				0FCE6264262E7D9000CA85EC /* Types.hpp */,
 				0FCE626D262F4C1A00CA85EC /* CountedString.cpp */,
 				0FCE626E262F4C1A00CA85EC /* CountedString.hpp */,
-				0FCE62722630F26D00CA85EC /* CoreDictionary.cpp */,
-				0FCE62732630F26D00CA85EC /* CoreDictionary.hpp */,
 				0FCE627B2630F80000CA85EC /* Terminal.cpp */,
 				0FCE627C2630F80000CA85EC /* Terminal.hpp */,
 			);
@@ -130,7 +125,7 @@
 		0FA47FD7262A6B2E00C3D147 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1240;
+				LastUpgradeCheck = 1250;
 				TargetAttributes = {
 					0FA47FDE262A6B2E00C3D147 = {
 						CreatedOnToolsVersion = 12.4;
@@ -162,7 +157,6 @@
 			files = (
 				0FA47FF8262B525400C3D147 /* Builder.cpp in Sources */,
 				0FCE627D2630F80000CA85EC /* Terminal.cpp in Sources */,
-				0FCE62742630F26D00CA85EC /* CoreDictionary.cpp in Sources */,
 				0FCE626B262F49D200CA85EC /* DictionaryWord.cpp in Sources */,
 				0FA47FEC262B4D3100C3D147 /* Runtime.cpp in Sources */,
 				0FA3F3ED2639D65400DE9E0B /* Debug.cpp in Sources */,

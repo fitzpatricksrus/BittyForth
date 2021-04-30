@@ -20,3 +20,15 @@ void CountedString::fromCString(const std::string& source, char* dest, int maxLe
 	}
 	dest[0] = maxLen;
 }
+
+std::string CountedString::toCString(char* str) {
+	int len = *str;
+	str++;
+	
+	std::string result;
+	for (int i = 0; i < len; i++) {
+		result += *str;
+		str++;
+	}
+	return result;
+}

@@ -75,7 +75,7 @@ void Runtime::reset() {
 		dbg(lastWordPtrAddr, "lastWordPtrAddr");
 	clearStacksAndIp();
 	
-	CoreDictionary(this).rebuildDictionary();
+	Builder(this).rebuildDictionary();
 }
 
 void Runtime::abort() {
@@ -139,8 +139,8 @@ void Runtime::execute(DictionaryWord* newAbortWord, DictionaryWord* wordToExecut
 	}
 }
 
-Ptr Runtime::allocate(int bytes) {
-	Ptr result = *dictionaryPtrAddr;
+XData* Runtime::allocate(int bytes) {
+	XData* result = (XData*)dictionaryPtrAddr;
 	Ptr addr = (*dictionaryPtrAddr);
 	addr += bytes;
 	(*dictionaryPtrAddr) = addr;

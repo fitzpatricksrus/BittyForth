@@ -20,8 +20,5 @@ typedef union XData {
 	operator char*() { return ptr; }
 	operator DictionaryWord*() { return w; }
 } XData;
-	
-typedef XData* XPtr;
-
 
 #endif /* Types_hpp */

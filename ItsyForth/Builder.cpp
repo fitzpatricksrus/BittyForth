@@ -13,6 +13,8 @@
 #include "CountedString.hpp"
 #include "Debug.hpp"
 
+static const std::string INDENT("   ");
+
 Builder::Builder(Runtime* runtimeIn) {
 	runtime = runtimeIn;
 	marksIdx = 0;
@@ -39,6 +41,10 @@ std::string Builder::getNextInputWord(char delimeter) {
 	return result;
 }
 
+DictionaryWord* Builder::findWord(const OpCode& opcode) {
+	return findWord(opcode.toString());
+}
+
 DictionaryWord* Builder::findWord(const std::string& name) {
 	DictionaryWord* word = runtime->getLastWordPtr();
 	char nameCountedString[32];
@@ -52,6 +58,7 @@ DictionaryWord* Builder::findWord(const std::string& name) {
 		}
 	}
 	if (word == nullptr) runtime->dbg("Word '"+name+"' not found in dictionary");
+			// hey jf - throw an exception here
 	return word;
 }
 
@@ -72,73 +79,81 @@ DictionaryWord* Builder::createWord(const std::string& name, OpCode opcode, Num 
 	return result;
 }
 
-XPtr Builder::append(long value) {
-	return append((void*)value);
+void Builder::compileOpCode(const OpCode& opcode) {
+	compileReference(opcode.toString());
 }
 
-XPtr Builder::append(void* addr) {
-	XData* result = (XData*)runtime->allocate(sizeof(XData));
-	result->ptr = (char*)addr;
-
-	runtime->dbg(result, std::to_string(runtime->dbgOffset(addr)));
-
-	return (XPtr)result;
+void Builder::compileConstant(const std::string& name, long value) {
+	DictionaryWord* word = createWord(name, OpCode::Constant);
+	append(value);
 }
 
-XPtr Builder::append(const XData& data) {
-	XData* result = (XData*)runtime->allocate(sizeof(data));
-	*result = data;
+void Builder::compileLiteral(long value) {
+	void* addr = append(OpCode::Lit);
+	append(value);
 
-	runtime->dbg(result, std::to_string(data.l));
-
-	return (XPtr)result;
+	runtime->dbg(addr, OpCode(OpCode::Lit).toString() + " " + std::to_string(value));
 }
 
-XPtr Builder::append(const std::string &wordName) {
-	XData data(findWord(wordName));
-	XData* result = (XData*)runtime->allocate(sizeof(data));
-	*result = data;
+void Builder::compileStartWord(const std::string& name, Num flags) {
+	DictionaryWord* word = createWord(name, OpCode::Colon, flags);
+	CountedString::fromCString(name, word->name, sizeof(word->name));
+	
+	runtime->dbg(word, OpCode(OpCode::Colon).toString() + " " + name);
+}
 
-	runtime->dbg(result, "   " + wordName + " (" + std::to_string(runtime->dbgOffset(data.ptr)) +")");
+void Builder::compileReference(DictionaryWord* word) {
+	void* addr = append(word);
+	
+	runtime->dbg(addr, CountedString::toCString(word->name) + "(" + std::to_string((long)word) + ")");
+}
 
-	return (XPtr)result;
+void Builder::compileReference(const std::string& name) {
+	DictionaryWord* word = findWord(name);
+	append(word);
+
+	runtime->dbg(word, name + "(" + std::to_string((long)word) + ")");
+}
+
+void Builder::compileEndWord() {
+	compileReference(OpCode(OpCode::DoSemicolon));
 }
 
 void Builder::compileBegin() {
-	pushMark((XPtr)runtime->getDictionaryPtr());
+	pushMark((XData*)runtime->getDictionaryPtr());
 }
 
 void Builder::compileIf() {
-	append("(0branch)");
-	pushMark(append((XPtr)nullptr));
+	compileReference(OpCode(OpCode::ZeroBranch));
+	pushMark(runtime->allocate(sizeof(XData)));
 }
 
 void Builder::compileElse() {
-	XPtr ifMark = popMark();
-	append("(branch)");
-	pushMark(append((XPtr)nullptr));
+	XData* ifMark = popMark();
+	compileReference(OpCode(OpCode::Branch));
+	pushMark(runtime->allocate(sizeof(XData)));
 	*ifMark = runtime->getDictionaryPtr();
 }
 
 void Builder::compileEndif() {
-	XPtr ifMark = popMark();
+	XData* ifMark = popMark();
 	*ifMark = runtime->getDictionaryPtr();
 }
 
 void Builder::compileAgain() {
-	append("(branch)");
+	compileReference(OpCode(OpCode::Branch));
 	append(popMark());
 }
 
-void Builder::pushMark() {
-	pushMark((XPtr)runtime->getDictionaryPtr());
+void Builder::pushMarkDP() {
+	pushMark((XData*)runtime->getDictionaryPtr());
 }
 
-void Builder::pushMark(XPtr m) {
+void Builder::pushMark(XData* m) {
 	marks[marksIdx++] = m;
 }
 
-XPtr Builder::popMark() {
+XData* Builder::popMark() {
 	return marks[--marksIdx];
 }
 
@@ -174,3 +189,163 @@ XPtr Builder::popMark() {
 		again	//15
 		;
 */
+
+XData* Builder::append(const XData& data) {
+	XData* d = runtime->allocate(sizeof(XData));
+	*d = data;
+	return d;
+}
+
+void Builder::rebuildDictionary() {
+	// recreate the system dictionary entries
+	Builder builder(runtime);
+	
+	// system words
+	builder.createWord("(doColon)", OpCode::DoColon);
+	builder.createWord("(doSemicolon)", OpCode::DoSemicolon);
+	builder.createWord("(doConstant)", OpCode::DoConstant);
+	builder.createWord("(doVariable)", OpCode::DoVariable);
+	builder.createWord("abort", OpCode::Abort);
+	builder.createWord(",", OpCode::Comma);
+	builder.createWord("(lit)", OpCode::Lit);
+	builder.createWord("rot", OpCode::Rot);
+	builder.createWord("drop", OpCode::Drop);
+	builder.createWord("dup", OpCode::Dup);
+	builder.createWord("swap", OpCode::Swap);
+	builder.createWord("+", OpCode::Plus);
+	builder.createWord("=", OpCode::Equals);
+	builder.createWord("@", OpCode::At);
+	builder.createWord("!", OpCode::Put);
+	builder.createWord("(0branch)", OpCode::ZeroBranch);
+	builder.createWord("(branch)", OpCode::Branch);
+	builder.createWord("execute", OpCode::Execute);
+	builder.createWord("exit", OpCode::Exit);
+	builder.createWord("count", OpCode::Count);
+	builder.createWord(">number", OpCode::ToNumber);
+	builder.createWord("accept", OpCode::Accept);
+	builder.createWord("word", OpCode::Word);
+	builder.createWord("emit", OpCode::Emit);
+	builder.createWord("find", OpCode::Find);
+	builder.createWord(":", OpCode::Colon);
+	builder.createWord(";", OpCode::SemiColon);
+	builder.createWord("constant", OpCode::Constant);
+
+	// system variables
+	builder.createWord("abortWord", OpCode::Constant);
+	builder.append(runtime->getAbortWordPtrAddr());
+	builder.createWord("dp", OpCode::Constant);
+	builder.append(runtime->getDictionaryPtrAddr());
+	builder.createWord("base", OpCode::Constant);
+	builder.append(runtime->getNumberBaseAddr());
+	builder.createWord("tibAddr", OpCode::Constant);
+	builder.append(runtime->getTibAddrAddr());
+	builder.createWord("tib", OpCode::Colon);
+		builder.compileReference("tibAddr");
+		builder.compileReference("@");
+		builder.compileReference(";");
+	builder.createWord("#tib", OpCode::Constant);
+	builder.append(runtime->getTibContentLengthAddr());
+	builder.createWord(">in", OpCode::Constant);
+	builder.append(runtime->getTibInputOffsetAddr());
+	builder.createWord("lastWord", OpCode::Constant);
+	builder.append(runtime->getLastWordPtrAddr());
+	builder.createWord("compilerFlags", OpCode::Constant);
+	builder.append(runtime->getCompilerFlagsAddr());
+	
+	/*
+		: interpret
+		begin
+			#tib @ >in @ =
+			if
+				tib 50 accept #tib ! 0 >in !
+			then
+			32 word find dup
+			if
+				state @ =
+				if
+					,
+				else
+					execute
+				then
+			else
+				dup rot count >number
+				if
+					state @
+					if
+						last @ dup @ last ! dp !
+					then
+					abort
+				then
+				drop drop state @
+				if
+					['] lit , ,
+				then
+			then
+		again
+		;
+	 */
+	builder.createWord("interpret", OpCode::Colon);
+	builder.compileBegin();
+		builder.compileReference("#tib");
+		builder.compileReference("@");
+		builder.compileReference(">in");
+		builder.compileReference("@");
+		builder.compileReference("=");
+		builder.compileIf();
+			builder.compileReference("tib");
+			builder.compileLiteral(50);
+			builder.compileReference("accept");
+			builder.compileReference("#tib");
+			builder.compileReference("!");
+			builder.compileReference(">in");
+			builder.compileReference("!");
+		builder.compileEndif();
+		builder.compileLiteral(32);
+		builder.compileReference("word");
+		builder.compileReference("find");
+		builder.compileReference("dup");
+		builder.compileIf();
+			builder.compileReference("state");
+			builder.compileReference("@");
+			builder.compileReference("=");
+			builder.compileIf();
+				builder.compileReference(",");
+			builder.compileElse();
+				builder.compileReference("execute");
+			builder.compileEndif();
+		builder.compileElse();
+			builder.compileReference("dup");
+			builder.compileReference("rot");
+			builder.compileReference("count");
+			builder.compileReference(">number");
+			builder.compileIf();
+				builder.compileReference("state");
+				builder.compileReference("@");
+				builder.compileIf();
+					builder.compileReference("last");
+					builder.compileReference("@");
+					builder.compileReference("dup");
+					builder.compileReference("@");
+					builder.compileReference("last");
+					builder.compileReference("!");
+					builder.compileReference("dp");
+					builder.compileReference("!");
+				builder.compileEndif();
+				builder.compileReference("abort");
+			builder.compileEndif();
+			builder.compileReference("drop");
+			builder.compileReference("drop");
+			builder.compileReference("state");
+			builder.compileReference("@");
+			builder.compileReference("tib");
+			builder.compileIf();
+				builder.compileReference("(lit)");
+				builder.compileReference("(lit)");
+				builder.compileReference(",");
+				builder.compileReference(",");
+			builder.compileEndif();
+		builder.compileEndif();
+	builder.compileAgain();
+	builder.compileReference("(doSemicolon)");
+
+}

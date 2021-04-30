@@ -40,8 +40,7 @@ public:
 	void emit(char c) { terminal.emit(c); }
 	char read() { return terminal.read(); }
 
-	Ptr allocate(int bytes);
-	template <typename T> T* append(T value);
+	XData* allocate(int bytes);
 	
 	DictionaryWord* getAbortWordPtr() { return *abortWordPtrAddr; }
 	DictionaryWord** getAbortWordPtrAddr() { return abortWordPtrAddr; }
@@ -98,12 +97,5 @@ private:
 	DictionaryWord* currentWord;
 	Terminal terminal;
 };
-
-template <typename T>
-T* Runtime::append(T value) {
-	T* result = (T*)allocate(sizeof(value));
-	*result = value;
-	return result;
-}
 
 #endif /* Runtime_hpp */

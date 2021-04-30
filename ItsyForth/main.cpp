@@ -1,13 +1,13 @@
 #include <iostream>
 
 #include "Runtime.hpp"
-#include "CoreDictionary.hpp"
+#include "Builder.hpp"
 
 int main(int argc, const char * argv[]) {
 	Runtime runtime;
-	CoreDictionary dictionary(&runtime);
+	Builder dictionary(&runtime);
 	
-	DictionaryWord* interpreter = dictionary.find("interpret");
+	DictionaryWord* interpreter = dictionary.findWord("interpret");
 	runtime.execute(interpreter, interpreter);
 	
 	return 0;

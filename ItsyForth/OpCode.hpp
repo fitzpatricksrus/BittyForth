@@ -47,6 +47,7 @@ struct OpCode {
 	void execute(Runtime* runtime, DictionaryWord* currentWord);
 
 	OpCode::Code code;
+
 };
 
 

@@ -37,35 +37,35 @@ OpCode::operator std::string() const {
 
 std::string OpCode::toString() const {
 	static const std::string names[] = {
-		"DoColon",
-		"DoSemicolon",
-		"DoConstant",
-		"DoVariable",
-		"Abort",
-		"Comma",
-		"Lit",
-		"Rot",
-		"Drop",
-		"Dup",
-		"Swap",
-		"Plus",
-		"Equals",
-		"At",
-		"Put",
-		"ZeroBranch",
-		"Branch",
-		"Execute",
-		"Exit",
-		"Count",
-		"ToNumber",
-		"Accept",
-		"Word",
-		"Emit",
-		"Find",
-		"SemiColon",
-		"Colon",
-		"Create",
-		"Constant"
+		"(colon)",
+		"(semicolon)",
+		"(constant)",
+		"(variable)",
+		"abort",
+		",",
+		"(lit)",
+		"rot",
+		"drop",
+		"dup",
+		"swap",
+		"+",
+		"=",
+		"@",
+		"!",
+		"(0branch)",
+		"(branh)",
+		"execute",
+		"exit",
+		"count",
+		">number",
+		"accept",
+		"word",
+		"emit",
+		"find",
+		";",
+		":",
+		"create",
+		"constant"
 	};
 	return names[code];
 }
@@ -90,7 +90,7 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 		runtime->abort();
 		break;
 	case Comma: {
-		runtime->append(runtime->popData());
+		Builder(runtime).compileReference(runtime->popData());
 		break; }
 	case Lit:
 		runtime->pushData(runtime->consumeNextInstruction());
