@@ -1,35 +1,20 @@
 #include "Runtime.hpp"
-#include "DictionaryWord.hpp"
-#include "OpCode.hpp"
-#include <stddef.h>
-#include "StructuredMemory.hpp"
-#include "Builder.hpp"
-#include "CoreDictionary.hpp"
 #include "Debug.hpp"
 
-//void Runtime::dbg(long value, std::string msg) {
-//	Debug::print(">> " + std::to_string(value) + ": " + msg);
-//}
-
-void Runtime::dbg(void* addr, std::string msg) {
-	Debug::print(">> " + std::to_string((long)(((char*)addr) - memory)) + ": " + msg);
+void Runtime::dbg(int addr, std::string msg) {
+	Debug::print(">> " + std::to_string(addr) + ": " + msg);
 }
 
 void Runtime::dbg(std::string msg) {
 	Debug::print(">> " + msg);
 }
 
-long Runtime::dbgOffset(void* addr) {
-	return ((char*)addr) - memory;
-}
-
-Runtime::Runtime(int heapSize, int dataStackSize, int returnStackSize)
-: stackPtr(0), returnPtr(0), ip(0), currentWord(0)
+Runtime::Runtime()
+: stackPtr(0), returnPtr(0), nextInstructionPtr(0), currentInstructionPtr(0)
 {
 	memory = new char[heapSize];
-	dataStack = new XData[dataStackSize];
-	returnStack = new IPtr[returnStackSize];
-	reset();
+	dataStack = new int[dataStackSize];
+	returnStack = new int[returnStackSize];
 }
 
 Runtime::~Runtime() {
@@ -38,111 +23,89 @@ Runtime::~Runtime() {
 	delete [] returnStack;
 }
 
-void Runtime::clearStacksAndIp() {
-	numberBaseAddr = (Num*)allocate(sizeof(*numberBaseAddr));
-		dbg(numberBaseAddr, "numberBaseAddr");
-	tibContentLengthAddr = (Num*)allocate(sizeof(*tibContentLengthAddr));
-		dbg(tibContentLengthAddr, "tibContentLengthAddr");
-	tibInputOffsetAddr = (Num*)allocate(sizeof(*tibInputOffsetAddr));
-		dbg(tibInputOffsetAddr, "tibInputOffsetAddr");
-	compilerFlagsAddr = (Num*)allocate(sizeof(*compilerFlagsAddr));
-		dbg(compilerFlagsAddr, "compilerFlagsAddr");
-	char* tibAddr = (char*)allocate(sizeof(char) * 256);
-		dbg(tibAddr, "tibAddr");
-	tibAddrAddr = (char**)allocate(sizeof(*tibAddrAddr));
-		dbg(tibAddrAddr, "tibAddrAddr");
-
-	*numberBaseAddr = 10;
-	*tibContentLengthAddr = 0;
-	*tibInputOffsetAddr = 0;
-	*compilerFlagsAddr = 0;
-	tibAddr[0] = 0;
-	*tibAddrAddr = tibAddr;
-
+void Runtime::execute() {
 	stackPtr = 0;
 	returnPtr = 0;
-	ip = 0;
-	currentWord = 0;
-}
-
-void Runtime::reset() {
-	dictionaryPtrAddr = (char**)memory;
-		dbg(dictionaryPtrAddr, "dictionaryPtrAddr");
-	*dictionaryPtrAddr = memory + sizeof(*dictionaryPtrAddr);
-	abortWordPtrAddr = (DictionaryWord**)allocate(sizeof(*abortWordPtrAddr));
-		dbg(abortWordPtrAddr, "abortWordPtrAddr");
-	lastWordPtrAddr = (DictionaryWord**)allocate(sizeof(*lastWordPtrAddr));
-		dbg(lastWordPtrAddr, "lastWordPtrAddr");
-	clearStacksAndIp();
+	currentInstructionPtr = 0;
+	nextInstructionPtr = sizeof(Cell);
 	
-	Builder(this).rebuildDictionary();
+	currentInstructionPtr = nextInstructionPtr++;
+	Cell& cell = getCell(currentInstructionPtr);
+	do {
+		cell.asInstruction.execute(this, currentInstructionPtr, nextInstructionPtr);
+		currentInstructionPtr = nextInstructionPtr++;
+		cell = getCell(currentInstructionPtr);
+	} while (cell.asInstruction.opcode != OpCode::Exit);
 }
 
-void Runtime::abort() {
-	clearStacksAndIp();
-	ip = (*abortWordPtrAddr)->firstInstructionPtr();
+void* Runtime::asPtr(int addr) {
+	return memory + addr;
 }
 
-XData Runtime::tos() {
+Cell& Runtime::getCell(int addr) {
+	Cell* result = (Cell*)(memory + addr);
+	return *result;
+}
+
+void Runtime::setCell(int addr, int data) {
+	Cell* result = (Cell*)(memory + addr);
+	result->asData = data;
+}
+
+void Runtime::setCell(int addr, const Instruction& data) {
+	Cell* result = (Cell*)(memory + addr);
+	result->asInstruction = data;
+}
+
+void Runtime::setCell(int addr, Cell data) {
+	Cell* result = (Cell*)(memory + addr);
+	*result = data;
+}
+
+char& Runtime::getByte(int addr) {
+	return memory[addr];
+}
+
+void Runtime::setByte(int addr, char value) {
+	memory[addr] = value;
+}
+
+int Runtime::tos() {
 	return dataStack[stackPtr - 1];
 }
 
-XData Runtime::popData() {
+int Runtime::popData() {
 	return dataStack[--stackPtr];
 }
 
-void Runtime::pushData(XData data) {
+void Runtime::pushData(int data) {
 	dataStack[stackPtr++] = data;
 }
 
-XData Runtime::peekData(long ndx) {
+int Runtime::peekData(int ndx) {
 	return dataStack[stackPtr - 1 - ndx];
 }
 
-void Runtime::pokeData(long ndx, XData value) {
+void Runtime::pokeData(int ndx, int value) {
 	dataStack[stackPtr - 1 - ndx] = value;
 }
 
-IPtr Runtime::popReturn() {
+int Runtime::popReturn() {
 	return returnStack[--returnPtr];
 }
 
-void Runtime::pushReturn(IPtr value) {
+void Runtime::pushReturn(int value) {
 	returnStack[returnPtr++] = value;
 }
 
-DictionaryWord* Runtime::peekNextInstruction() {
-	return *ip;
+int Runtime::getCurrentInstructionPointer() {
+	return currentInstructionPtr;
 }
 
-DictionaryWord* Runtime::consumeNextInstruction() {
-	DictionaryWord* result = *ip;
-	ip++;
-	return result;
+int Runtime::getNextInstructionPointer() {
+	return nextInstructionPtr;
 }
 
-IPtr Runtime::getInstructionPointer() {
-	return ip;
-}
-
-void Runtime::setInstructionPointer(IPtr newIP) {
-	ip = newIP;
-}
-
-void Runtime::execute(DictionaryWord* newAbortWord, DictionaryWord* wordToExecute) {
-	(*abortWordPtrAddr) = newAbortWord;
-	pushReturn(0L);
-	ip = wordToExecute->firstInstructionPtr();
-	while (ip) {
-		DictionaryWord* currentWord = consumeNextInstruction();
-		currentWord->opcode.execute(this, currentWord);
-	}
-}
-
-XData* Runtime::allocate(int bytes) {
-	XData* result = (XData*)dictionaryPtrAddr;
-	Ptr addr = (*dictionaryPtrAddr);
-	addr += bytes;
-	(*dictionaryPtrAddr) = addr;
- 	return result;
+void Runtime::setNextInstructionPointer(int newIP) {
+	nextInstructionPtr = newIP;
 }

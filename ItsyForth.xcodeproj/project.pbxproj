@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F585128263E10D700E0461F /* Cell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F585126263E10D700E0461F /* Cell.cpp */; };
+		0F58512B263E2C5500E0461F /* InterpreterBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F585129263E2C5500E0461F /* InterpreterBuilder.cpp */; };
 		0FA3F3ED2639D65400DE9E0B /* Debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA3F3EB2639D65400DE9E0B /* Debug.cpp */; };
 		0FA47FE3262A6B2E00C3D147 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA47FE2262A6B2E00C3D147 /* main.cpp */; };
 		0FA47FEC262B4D3100C3D147 /* Runtime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FA47FEA262B4D3100C3D147 /* Runtime.cpp */; };
@@ -15,6 +17,8 @@
 		0FCE626B262F49D200CA85EC /* DictionaryWord.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FCE626A262F49D200CA85EC /* DictionaryWord.cpp */; };
 		0FCE626F262F4C1A00CA85EC /* CountedString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FCE626D262F4C1A00CA85EC /* CountedString.cpp */; };
 		0FCE627D2630F80000CA85EC /* Terminal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FCE627B2630F80000CA85EC /* Terminal.cpp */; };
+		0FFA29DF263CCFAC0000A8A9 /* Compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FFA29DD263CCFAC0000A8A9 /* Compiler.cpp */; };
+		0FFA29E2263DF7F10000A8A9 /* Instruction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FFA29E0263DF7F10000A8A9 /* Instruction.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,6 +34,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0F585126263E10D700E0461F /* Cell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Cell.cpp; sourceTree = "<group>"; };
+		0F585127263E10D700E0461F /* Cell.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Cell.hpp; sourceTree = "<group>"; };
+		0F585129263E2C5500E0461F /* InterpreterBuilder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InterpreterBuilder.cpp; sourceTree = "<group>"; };
+		0F58512A263E2C5500E0461F /* InterpreterBuilder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = InterpreterBuilder.hpp; sourceTree = "<group>"; };
 		0FA3F3EB2639D65400DE9E0B /* Debug.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Debug.cpp; sourceTree = "<group>"; };
 		0FA3F3EC2639D65400DE9E0B /* Debug.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Debug.hpp; sourceTree = "<group>"; };
 		0FA47FDF262A6B2E00C3D147 /* ItsyForth */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ItsyForth; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,12 +49,15 @@
 		0FA47FF3262B4DFB00C3D147 /* DictionaryWord.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DictionaryWord.hpp; sourceTree = "<group>"; };
 		0FA47FF6262B525400C3D147 /* Builder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Builder.cpp; sourceTree = "<group>"; };
 		0FA47FF7262B525400C3D147 /* Builder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Builder.hpp; sourceTree = "<group>"; };
-		0FCE6264262E7D9000CA85EC /* Types.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Types.hpp; sourceTree = "<group>"; };
 		0FCE626A262F49D200CA85EC /* DictionaryWord.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DictionaryWord.cpp; sourceTree = "<group>"; };
 		0FCE626D262F4C1A00CA85EC /* CountedString.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CountedString.cpp; sourceTree = "<group>"; };
 		0FCE626E262F4C1A00CA85EC /* CountedString.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CountedString.hpp; sourceTree = "<group>"; };
 		0FCE627B2630F80000CA85EC /* Terminal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Terminal.cpp; sourceTree = "<group>"; };
 		0FCE627C2630F80000CA85EC /* Terminal.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Terminal.hpp; sourceTree = "<group>"; };
+		0FFA29DD263CCFAC0000A8A9 /* Compiler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Compiler.cpp; sourceTree = "<group>"; };
+		0FFA29DE263CCFAC0000A8A9 /* Compiler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Compiler.hpp; sourceTree = "<group>"; };
+		0FFA29E0263DF7F10000A8A9 /* Instruction.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Instruction.cpp; sourceTree = "<group>"; };
+		0FFA29E1263DF7F10000A8A9 /* Instruction.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Instruction.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,21 +91,28 @@
 			isa = PBXGroup;
 			children = (
 				0FA47FE2262A6B2E00C3D147 /* main.cpp */,
-				0FA47FEA262B4D3100C3D147 /* Runtime.cpp */,
-				0FA47FEB262B4D3100C3D147 /* Runtime.hpp */,
-				0FA47FEE262B4DC300C3D147 /* OpCode.cpp */,
+				0F585127263E10D700E0461F /* Cell.hpp */,
+				0F585126263E10D700E0461F /* Cell.cpp */,
+				0FFA29E1263DF7F10000A8A9 /* Instruction.hpp */,
+				0FFA29E0263DF7F10000A8A9 /* Instruction.cpp */,
 				0FA47FEF262B4DC300C3D147 /* OpCode.hpp */,
-				0FCE626A262F49D200CA85EC /* DictionaryWord.cpp */,
+				0FA47FEE262B4DC300C3D147 /* OpCode.cpp */,
 				0FA47FF3262B4DFB00C3D147 /* DictionaryWord.hpp */,
+				0FCE626A262F49D200CA85EC /* DictionaryWord.cpp */,
+				0FA47FEB262B4D3100C3D147 /* Runtime.hpp */,
+				0FA47FEA262B4D3100C3D147 /* Runtime.cpp */,
+				0FFA29DE263CCFAC0000A8A9 /* Compiler.hpp */,
+				0FFA29DD263CCFAC0000A8A9 /* Compiler.cpp */,
+				0F58512A263E2C5500E0461F /* InterpreterBuilder.hpp */,
+				0F585129263E2C5500E0461F /* InterpreterBuilder.cpp */,
+				0FCE626E262F4C1A00CA85EC /* CountedString.hpp */,
+				0FCE626D262F4C1A00CA85EC /* CountedString.cpp */,
+				0FA3F3EC2639D65400DE9E0B /* Debug.hpp */,
+				0FA3F3EB2639D65400DE9E0B /* Debug.cpp */,
+				0FCE627C2630F80000CA85EC /* Terminal.hpp */,
+				0FCE627B2630F80000CA85EC /* Terminal.cpp */,
 				0FA47FF6262B525400C3D147 /* Builder.cpp */,
 				0FA47FF7262B525400C3D147 /* Builder.hpp */,
-				0FA3F3EB2639D65400DE9E0B /* Debug.cpp */,
-				0FA3F3EC2639D65400DE9E0B /* Debug.hpp */,
-				0FCE6264262E7D9000CA85EC /* Types.hpp */,
-				0FCE626D262F4C1A00CA85EC /* CountedString.cpp */,
-				0FCE626E262F4C1A00CA85EC /* CountedString.hpp */,
-				0FCE627B2630F80000CA85EC /* Terminal.cpp */,
-				0FCE627C2630F80000CA85EC /* Terminal.hpp */,
 			);
 			path = ItsyForth;
 			sourceTree = "<group>";
@@ -159,9 +177,13 @@
 				0FCE627D2630F80000CA85EC /* Terminal.cpp in Sources */,
 				0FCE626B262F49D200CA85EC /* DictionaryWord.cpp in Sources */,
 				0FA47FEC262B4D3100C3D147 /* Runtime.cpp in Sources */,
+				0F585128263E10D700E0461F /* Cell.cpp in Sources */,
+				0FFA29E2263DF7F10000A8A9 /* Instruction.cpp in Sources */,
 				0FA3F3ED2639D65400DE9E0B /* Debug.cpp in Sources */,
 				0FCE626F262F4C1A00CA85EC /* CountedString.cpp in Sources */,
 				0FA47FF0262B4DC300C3D147 /* OpCode.cpp in Sources */,
+				0FFA29DF263CCFAC0000A8A9 /* Compiler.cpp in Sources */,
+				0F58512B263E2C5500E0461F /* InterpreterBuilder.cpp in Sources */,
 				0FA47FE3262A6B2E00C3D147 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

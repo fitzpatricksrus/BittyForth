@@ -3,99 +3,67 @@
 
 #include <stddef.h>
 #include <string.h>
-#include "Types.hpp"
 #include "Terminal.hpp"
-
-class DictionaryWord;
+#include "Instruction.hpp"
+#include "Cell.hpp"
 
 class Runtime {
 public:
-//	void dbg(long addr, std::string msg);
-	void dbg(void* addr, std::string msg);
-	void dbg(std::string msg);
-	long dbgOffset(void* addr);
+	static const int heapSize = 16384;
+	static const int dataStackSize = 256;
+	static const int returnStackSize = 256;
 
-	Runtime(int heapSize = 16384, int dataStackSize = 256, int returnStackSize = 256);
+	void dbg(int addr, std::string msg);
+	void dbg(std::string msg);
+
+	Runtime();
 	~Runtime();
 	
-	void reset();
-	void abort();
+	void execute();
+	void* asPtr(int addr);
 	
-	XData tos();
-	XData popData();
-	void pushData(XData data);
-	XData peekData(long ndx);
-	void pokeData(long ndx, XData value);
+	Cell& getCell(int addr);
+	void setCell(int addr, int data);
+	void setCell(int addr, const Instruction& data);
+	void setCell(int addr, Cell data);
+	char& getByte(int addr);
+	void setByte(int addr, char value);
 	
-	IPtr popReturn();
-	void pushReturn(IPtr value);
+	char& operator()(int addr) { return *(memory + addr); }
+	Cell& operator[](int addr) { return (Cell&) *asPtr(addr); }
 	
-	DictionaryWord* peekNextInstruction();
-	DictionaryWord* consumeNextInstruction();
-	IPtr getInstructionPointer();
-	void setInstructionPointer(IPtr newIP);
-
-	void execute(DictionaryWord* newAbortWord, DictionaryWord* wordToExecute /* must be colon word */);
+	int tos();
+	int popData();
+	void pushData(int data);
+	int peekData(int ndx);
+	void pokeData(int ndx, int value);
+	
+	int popReturn();
+	void pushReturn(int value);
+	
+	int getCurrentInstructionPointer();
+	int getNextInstructionPointer();
+	void setNextInstructionPointer(int newIP);
 	
 	void emit(char c) { terminal.emit(c); }
 	char read() { return terminal.read(); }
-
-	XData* allocate(int bytes);
 	
-	DictionaryWord* getAbortWordPtr() { return *abortWordPtrAddr; }
-	DictionaryWord** getAbortWordPtrAddr() { return abortWordPtrAddr; }
-	void setAbortWordPtr(DictionaryWord* ptr) { *abortWordPtrAddr = ptr; }
-
-	char* getDictionaryPtr() { return *dictionaryPtrAddr; }
-	char** getDictionaryPtrAddr() { return dictionaryPtrAddr; }
-	void setDictionaryPtr(char* ptr) { *dictionaryPtrAddr = ptr; }
-	
-	DictionaryWord* getLastWordPtr() { return *lastWordPtrAddr; }
-	DictionaryWord** getLastWordPtrAddr() { return lastWordPtrAddr; }
-	void setLastWordPtr(DictionaryWord* ptr) { *lastWordPtrAddr = ptr; }
-	
-	Num getNumberBase() { return *numberBaseAddr; }
-	Num* getNumberBaseAddr() { return numberBaseAddr; }
-	void setNumberBase(Num ptr) { *numberBaseAddr = ptr; }
-	
-	Num getTibContentLength() { return *tibContentLengthAddr; }
-	Num* getTibContentLengthAddr() { return tibContentLengthAddr; }
-	void setTibContentLength(Num ptr) { *tibContentLengthAddr = ptr; }
-	
-	Num getTibInputOffset() { return *tibInputOffsetAddr; }
-	Num* getTibInputOffsetAddr() { return tibInputOffsetAddr; }
-	void setTibInputOffset(Num ptr) { *tibInputOffsetAddr = ptr; }
-	
-	Num getCompilerFlags() { return *compilerFlagsAddr; }
-	Num* getCompilerFlagsAddr() { return compilerFlagsAddr; }
-	void setCompilerFlags(Num ptr) { *compilerFlagsAddr = ptr; }
-	
-	char* getTibAddr() { return *tibAddrAddr; }
-	void setTibAddr(char* addr) { *tibAddrAddr = addr; };
-
-	char** getTibAddrAddr() { return tibAddrAddr; }
-
 private:
-	DictionaryWord** abortWordPtrAddr;
-	char** dictionaryPtrAddr;
-	DictionaryWord** lastWordPtrAddr;
-	Num* numberBaseAddr;
-	Num* tibContentLengthAddr;
-	Num* tibInputOffsetAddr;
-	Num* compilerFlagsAddr;
-	char** tibAddrAddr;
-
-	void clearStacksAndIp();
-
 	char* memory;
-	XData* dataStack;
-	IPtr* returnStack;
+	int* dataStack;
+	int* returnStack;	//this is cells so data can be put here
 	
 	int stackPtr;
 	int returnPtr;
-	IPtr ip;
-	DictionaryWord* currentWord;
+	int nextInstructionPtr;
+	int currentInstructionPtr;
 	Terminal terminal;
 };
+
+template <typename T>
+T* Runtime::getAddr(int addr) {
+	return (T*)memory;
+}
+
 
 #endif /* Runtime_hpp */

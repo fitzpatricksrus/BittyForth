@@ -50,7 +50,6 @@ private:
 	Runtime* runtime;
 	XData* marks[16];
 	int marksIdx;
-	
 };
 
 #endif /* Builder_hpp */

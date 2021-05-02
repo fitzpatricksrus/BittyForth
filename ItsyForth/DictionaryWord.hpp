@@ -1,21 +1,14 @@
 #ifndef DictionaryWord_hpp
 #define DictionaryWord_hpp
 
-#include "OpCode.hpp"
-#include <string>
-#include "Types.hpp"
+#include "Cell.hpp"
 
 class DictionaryWord {
 public:
-	static const int IMMEDIATE_MASK = 0x0001;
-	
-	DictionaryWord* previous;
-	Num flags;
-	OpCode opcode;
+	int previous;
 	char name[32];
-	XData data[];
-	
-	IPtr firstInstructionPtr() { return (IPtr)data; }
+	Instruction referenceInstruction;
+	Cell cells[];
 };
 
 #endif /* DictionaryWord_hpp */
