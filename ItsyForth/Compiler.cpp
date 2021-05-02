@@ -2,6 +2,8 @@
 #include "DictionaryWord.hpp"
 #include "CountedString.hpp"
 
+static const std::string INDENT = "  ";
+
 Compiler::Compiler(Runtime* runtimeIn)
 : runtime(runtimeIn)
 {
@@ -58,6 +60,7 @@ int Compiler::createWord(const std::string& name, const Instruction& refInstruct
 int Compiler::compileInstruction(const Instruction& ins) {
 	int result = allocate(sizeof(Cell));
 	(*runtime)[result].asInstruction = ins;
+	dbg(result, ins.toString());
 	return result;
 }
 
@@ -69,31 +72,40 @@ int Compiler::compileVariable(const std::string& name, int initialValue) {
 	int addr = createWord(name);
 	DictionaryWord* word = (DictionaryWord*)runtime->asPtr(addr);
 	word->referenceInstruction = Instruction(OpCode::DoVariable, compileData(initialValue));
+	dbg(addr, word->referenceInstruction.toString());
+	return addr;
 }
 
 int Compiler::compileConstant(const std::string& name, int value) {
-	return createWord(name, OpCode::DoConstant, value);
+	int result = createWord(name, OpCode::DoConstant, value);
+	dbg(result, Instruction(OpCode::DoConstant, value).toString());
 }
 
 int Compiler::compileStartColonWord(const std::string& name) {
 	int addr = createWord(name);
 	DictionaryWord* word = (DictionaryWord*)runtime->asPtr(addr);
 	word->referenceInstruction = Instruction(OpCode::DoColon, addr + sizeof(DictionaryWord));
+	dbg(addr, word->referenceInstruction.toString());
 	return addr;
 }
 
 int Compiler::compileData(int addr) {
 	int result = allocate(sizeof(Cell));
 	(*runtime)[result].asData = addr;
+	dbg(result, std::to_string(addr));
 	return result;
 }
 
 int Compiler::compileReference(const std::string& name) {
-	return compileInstruction(Instruction(OpCode::DoColon, findWord(name)));
+	int result = compileInstruction(Instruction(OpCode::DoColon, findWord(name)));
+	dbg(result, Instruction(OpCode::DoColon, findWord(name)).toString() + " " + name);
+	return result;
 }
 
 int Compiler::compileEndWord() {
-	return compileInstruction(OpCode::DoSemicolon);
+	int result = compileInstruction(OpCode::DoSemicolon);
+	dbg(result, OpCode::DoSemicolon);
+	return result;
 }
 
 int Compiler::compileBegin() {
@@ -111,12 +123,14 @@ int Compiler::compileElse() {
 	pushMark(getDictionaryPtr());			// else branch to patch later
 	int result = compileInstruction(OpCode::Branch);
 	(*runtime)[ifMark].asInstruction.data, getDictionaryPtr();
+	dbg(ifMark, (*runtime)[ifMark].asInstruction.toString());
 	return result;
 }
 
 int Compiler::compileEndif() {
 	int result = popMark();
 	(*runtime)[result].asInstruction.data = getDictionaryPtr();
+	dbg(result, (*runtime)[result].asInstruction.toString());
 	return result;
 }
 

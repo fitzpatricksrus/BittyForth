@@ -51,6 +51,9 @@ public:
 private:
 	void pushMark(int m) { markStack[markStackPtr++] = m; }
 	int popMark() { return markStack[--markStackPtr]; }
+	void dbg(int addr, const std::string& msg) { runtime->dbg(addr, msg); }
+	void dbg(int addr, const OpCode& op) { runtime->dbg(addr, Instruction(op).toString()); }
+	void dbg(int addr, const OpCode& op, int value) { runtime->dbg(addr, Instruction(op, value).toString()); }
 
 	Runtime* runtime;
 

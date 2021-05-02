@@ -9,6 +9,7 @@
 #define Instruction_hpp
 
 #include "OpCode.hpp"
+#include <string>
 
 class Runtime;
 
@@ -21,6 +22,8 @@ public:
 	int	data;
 	
 	void execute(Runtime* runtime, int currentInstructionPtr, int nextInstructionPtr);
+	
+	std::string toString() const;
 };
 
 #endif /* Instruction_hpp */

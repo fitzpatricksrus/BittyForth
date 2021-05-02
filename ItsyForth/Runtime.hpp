@@ -60,10 +60,4 @@ private:
 	Terminal terminal;
 };
 
-template <typename T>
-T* Runtime::getAddr(int addr) {
-	return (T*)memory;
-}
-
-
 #endif /* Runtime_hpp */

@@ -163,5 +163,40 @@ void Instruction::execute(Runtime* runtime, int currentInstructionPtr, int nextI
 	default: {
 		break; }
 	}
-
 }
+
+static const std::string OPCODE_NAMES[] = {
+		"INVALID_OPCODE"
+		"(colon)",
+		"(semicolon)",
+		"(lit)",
+		"(constant)",
+		"(variable)",
+		"abort",
+		",",
+		"rot",
+		"drop",
+		"dup",
+		"swap",
+		"+",
+		"=",
+		"@",
+		"!",
+		"(0branch)",
+		"(branh)",
+		"execute",
+		"exit",
+		"count",
+		">number",
+		"accept",
+		"word",
+		"emit",
+		"find",
+		"create",
+		"constant",
+	};
+
+std::string Instruction::toString() const {
+	return OPCODE_NAMES[opcode] + "(" + std::to_string(data) + ")";
+}
+

@@ -7,7 +7,7 @@
 
 #ifndef Builder_hpp
 #define Builder_hpp
-
+/*
 #include <string>
 #include "Types.hpp"
 
@@ -51,5 +51,5 @@ private:
 	XData* marks[16];
 	int marksIdx;
 };
-
+*/
 #endif /* Builder_hpp */

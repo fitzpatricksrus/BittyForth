@@ -4,7 +4,7 @@
 //
 //  Created by Dad on 4/17/21.
 //
-
+/*
 #include "Builder.hpp"
 
 #include "Runtime.hpp"
@@ -188,7 +188,7 @@ XData* Builder::popMark() {
 			then	//14
 		again	//15
 		;
-*/
+*
 
 XData* Builder::append(const XData& data) {
 	XData* d = runtime->allocate(sizeof(XData));
@@ -283,7 +283,7 @@ void Builder::rebuildDictionary() {
 			then
 		again
 		;
-	 */
+	 *
 	builder.createWord("interpret", OpCode::Colon);
 	builder.compileBegin();
 		builder.compileReference("#tib");
@@ -349,3 +349,4 @@ void Builder::rebuildDictionary() {
 	builder.compileReference("(doSemicolon)");
 
 }
+*/

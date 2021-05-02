@@ -1,14 +1,14 @@
 #include <iostream>
 
 #include "Runtime.hpp"
-#include "Builder.hpp"
+#include "Compiler.hpp"
+#include "InterpreterBuilder.hpp"
 
 int main(int argc, const char * argv[]) {
 	Runtime runtime;
-	Builder dictionary(&runtime);
+	InterpreterBuilder dictionary(&runtime);
 	
-	DictionaryWord* interpreter = dictionary.findWord("interpret");
-	runtime.execute(interpreter, interpreter);
+	dictionary.reset();
 	
 	return 0;
 }

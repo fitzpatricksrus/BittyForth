@@ -2,11 +2,13 @@
 #define OpCode_hpp
 
 typedef enum OpCode {
+	INVALID,
 	DoColon,
 	DoSemicolon,
 	DoLit,
 	DoConstant,
 	DoVariable,
+	Abort,
 	Comma,
 	Rot,
 	Drop,
@@ -28,8 +30,6 @@ typedef enum OpCode {
 	Find,
 	Create,
 	Constant,
-	
-	ERROR
 } OpCode;
 
 #endif /* OpCode_hpp */

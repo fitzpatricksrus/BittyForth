@@ -115,10 +115,11 @@ void InterpreterBuilder::reset() {
 			compiler.compileReference("state");
 			compiler.compileReference("@");
 			compiler.compileIf();
-				compiler.compileReference("[']");
+				// compile TOS as a literal
+//				compiler.compileReference("[']");
 				compiler.compileReference("lit");
-			compiler.compileReference(",");
-			compiler.compileReference(",");
+				compiler.compileReference(",");
+				compiler.compileReference(",");
 			compiler.compileEndif();
 		compiler.compileEndif();
 	compiler.compileAgain();
@@ -155,12 +156,4 @@ void InterpreterBuilder::reset() {
 		again
 		;
 	 */
-	
-	
-	
-	
-	compiler.createWord("#tib");
-	
-	compiler.compileStartColonWord("interpret");
-	compiler.
 }

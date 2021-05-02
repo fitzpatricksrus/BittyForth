@@ -1,4 +1,9 @@
 #include "OpCode.hpp"
+
+
+
+/*
+
 #include "Runtime.hpp"
 #include "DictionaryWord.hpp"
 #include "CountedString.hpp"
@@ -241,5 +246,5 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 		break; }
 	}
 }
-
+*/
 
