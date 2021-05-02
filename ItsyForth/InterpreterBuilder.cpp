@@ -14,7 +14,7 @@ InterpreterBuilder::InterpreterBuilder(Runtime* runtimeIn)
 }
 
 DictionaryWord* InterpreterBuilder::create(const std::string& name, const Instruction& refIns) {
-	int addr = compiler.createWord(name);
+	int addr = compiler.compileWord(name);
 	DictionaryWord* word = (DictionaryWord*)runtime->asPtr(addr);
 	word->referenceInstruction = refIns;
 }
@@ -24,32 +24,32 @@ void InterpreterBuilder::reset() {
 	compiler.reset();
 	
 	// variables for data defined by compiler
-	compiler.createWord("dp", OpCode::DoLit, compiler.getDictionaryPtrAddr());
-	compiler.createWord("last", OpCode::DoLit, compiler.getLastWordPtrAddr());
+	compiler.compileWord("dp", OpCode::DoLit, compiler.getDictionaryPtrAddr());
+	compiler.compileWord("last", OpCode::DoLit, compiler.getLastWordPtrAddr());
 	
 	// words for basic opcodes
 	
-	compiler.createWord("lit", OpCode::DoLit);
-	compiler.createWord(",", OpCode::Comma);
-	compiler.createWord("rot", OpCode::Rot);
-	compiler.createWord("drop", OpCode::Drop);
-	compiler.createWord("dup", OpCode::Dup);
-	compiler.createWord("swap", OpCode::Swap);
-	compiler.createWord("+", OpCode::Plus);
-	compiler.createWord("=", OpCode::Equals);
-	compiler.createWord("@", OpCode::At);
-	compiler.createWord("!", OpCode::Put);
-	compiler.createWord("0branch", OpCode::ZeroBranch);
-	compiler.createWord("branch", OpCode::Branch);
-	compiler.createWord("execute", OpCode::Execute);
-	compiler.createWord("exit", OpCode::Exit);
-	compiler.createWord("count", OpCode::Count);
-	compiler.createWord(">number", OpCode::ToNumber);
-	compiler.createWord("accept", OpCode::Accept);
-	compiler.createWord("word", OpCode::Word);
-	compiler.createWord("emit", OpCode::Emit);
-	compiler.createWord("find", OpCode::Find);
-	compiler.createWord("create", OpCode::Create);
+	compiler.compileWord("lit", OpCode::DoLit);
+	compiler.compileWord(",", OpCode::Comma);
+	compiler.compileWord("rot", OpCode::Rot);
+	compiler.compileWord("drop", OpCode::Drop);
+	compiler.compileWord("dup", OpCode::Dup);
+	compiler.compileWord("swap", OpCode::Swap);
+	compiler.compileWord("+", OpCode::Plus);
+	compiler.compileWord("=", OpCode::Equals);
+	compiler.compileWord("@", OpCode::At);
+	compiler.compileWord("!", OpCode::Put);
+	compiler.compileWord("0branch", OpCode::ZeroBranch);
+	compiler.compileWord("branch", OpCode::Branch);
+	compiler.compileWord("execute", OpCode::Execute);
+	compiler.compileWord("exit", OpCode::Exit);
+	compiler.compileWord("count", OpCode::Count);
+	compiler.compileWord(">number", OpCode::ToNumber);
+	compiler.compileWord("accept", OpCode::Accept);
+	compiler.compileWord("word", OpCode::Word);
+	compiler.compileWord("emit", OpCode::Emit);
+	compiler.compileWord("find", OpCode::Find);
+	compiler.compileWord("create", OpCode::Create);
 	
 	// allocate storage for compiler variables
 	compiler.compileVariable("#tib", 0);

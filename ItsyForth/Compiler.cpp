@@ -25,37 +25,24 @@ int Compiler::allocate(int size) {
 	return dp;
 }
 	
-int Compiler::findWord(const std::string &name) {
-	int wordAddr = runtime->getCell(lastWordPtrAddr);
-	while (wordAddr) {
-		DictionaryWord* lastWord = (DictionaryWord*)runtime->asPtr(wordAddr);
-		if (name == CountedString::toCString(lastWord->name)) {
-			return wordAddr;
-		} else {
-			wordAddr = lastWord->previous;
-		}
-	}
-	return -1;
-}
 
-int Compiler::createWord(const std::string& name) {
-	return createWord(name, Instruction(OpCode::ERROR, 0));
-}
-
-int Compiler::createWord(const std::string& name, const OpCode& opcode, int value) {
-	return createWord(name, Instruction(opcode, value));
-}
-
-int Compiler::createWord(const std::string& name, const Instruction& refInstruction) {
-	int result = allocate(sizeof(DictionaryWord));
-	DictionaryWord* word = (DictionaryWord*)runtime->asPtr(result);
-	word->previous = runtime->getCell(lastWordPtrAddr);
-	CountedString::fromCString(name, word->name, sizeof(word->name));
-	word->referenceInstruction = refInstruction;
-	(*runtime)[lastWordPtrAddr].asData = result;	//add to dictionary
+int Compiler::compileWord(const std::string& name) {
+	int result = createWord(name);
+	dbg(result, ": " + name);
 	return result;
 }
 
+int Compiler::compileWord(const std::string& name, const OpCode& opcode, int value) {
+	int result = createWord(name, opcode, value);
+	dbg(result, ": " + name + " " + Instruction(opcode, value).toString());
+	return result;
+}
+
+int Compiler::compileWord(const std::string& name, const Instruction& refInstruction) {
+	int result = createWord(name, refInstruction);
+	dbg(result, ": " + name + " " + refInstruction.toString());
+	return result;
+}
 
 int Compiler::compileInstruction(const Instruction& ins) {
 	int result = allocate(sizeof(Cell));
@@ -136,4 +123,35 @@ int Compiler::compileEndif() {
 
 int Compiler::compileAgain() {
 	return compileInstruction(Instruction(OpCode::Branch, popMark()));
+}
+
+int Compiler::findWord(const std::string &name) {
+	int wordAddr = runtime->getCell(lastWordPtrAddr);
+	while (wordAddr) {
+		DictionaryWord* lastWord = (DictionaryWord*)runtime->asPtr(wordAddr);
+		if (name == CountedString::toCString(lastWord->name)) {
+			return wordAddr;
+		} else {
+			wordAddr = lastWord->previous;
+		}
+	}
+	return -1;
+}
+
+int Compiler::createWord(const std::string& name) {
+	return createWord(name, Instruction(OpCode::INVALID, 0));
+}
+
+int Compiler::createWord(const std::string& name, const OpCode& opcode, int value) {
+	return createWord(name, Instruction(opcode, value));
+}
+
+int Compiler::createWord(const std::string& name, const Instruction& refInstruction) {
+	int result = allocate(sizeof(DictionaryWord));
+	DictionaryWord* word = (DictionaryWord*)runtime->asPtr(result);
+	word->previous = runtime->getCell(lastWordPtrAddr);
+	CountedString::fromCString(name, word->name, sizeof(word->name));
+	word->referenceInstruction = refInstruction;
+	(*runtime)[lastWordPtrAddr].asData = result;	//add to dictionary
+	return result;
 }

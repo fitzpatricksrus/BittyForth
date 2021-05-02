@@ -29,10 +29,9 @@ public:
 	int getLastWordPtrAddr() { return lastWordPtrAddr; }
 	void setLastWordPtr(int addr) { runtime->setCell(lastWordPtrAddr, addr); }
 
-	int findWord(const std::string& name);
-	int createWord(const std::string& name);
-	int createWord(const std::string& name, const OpCode& opcode, int value);
-	int createWord(const std::string& name, const Instruction& refInstruction);
+	int compileWord(const std::string& name);
+	int compileWord(const std::string& name, const OpCode& opcode, int value);
+	int compileWord(const std::string& name, const Instruction& refInstruction);
 	
 	int compileInstruction(const Instruction& opcode);
 	int compileLiteral(int value);
@@ -49,6 +48,11 @@ public:
 	int compileAgain();
 
 private:
+	int findWord(const std::string& name);
+	int createWord(const std::string& name);
+	int createWord(const std::string& name, const OpCode& opcode, int value);
+	int createWord(const std::string& name, const Instruction& refInstruction);
+	
 	void pushMark(int m) { markStack[markStackPtr++] = m; }
 	int popMark() { return markStack[--markStackPtr]; }
 	void dbg(int addr, const std::string& msg) { runtime->dbg(addr, msg); }
