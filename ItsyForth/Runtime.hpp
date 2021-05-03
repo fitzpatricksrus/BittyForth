@@ -29,8 +29,8 @@ public:
 	char& getByte(int addr);
 	void setByte(int addr, char value);
 	
-	char& operator()(int addr);
-	Cell& operator[](int addr);
+	char& operator()(int addr) { return *(memory + addr); }
+	Cell& operator[](int addr) { return (Cell&) *asPtr(addr); }
 	
 	int tos();
 	int popData();
@@ -59,8 +59,5 @@ private:
 	int currentInstructionPtr;
 	Terminal terminal;
 };
-
-inline char& Runtime::operator()(int addr) { return *(memory + addr); }
-inline Cell& Runtime::operator[](int addr) { Cell* cell = (Cell*)asPtr(addr);  return *cell; }
 
 #endif /* Runtime_hpp */

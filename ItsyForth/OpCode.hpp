@@ -1,7 +1,7 @@
 #ifndef OpCode_hpp
 #define OpCode_hpp
 
-enum OpCode {
+typedef enum OpCode {
 	INVALID,
 	DoColon,
 	DoSemicolon,
@@ -29,8 +29,7 @@ enum OpCode {
 	Emit,
 	Find,
 	Create,
-	Constant
-};
-
+	Constant,
+} OpCode;
 
 #endif /* OpCode_hpp */

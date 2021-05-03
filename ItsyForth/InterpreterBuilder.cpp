@@ -17,7 +17,6 @@ DictionaryWord* InterpreterBuilder::create(const std::string& name, const Instru
 	int addr = compiler.compileWord(name);
 	DictionaryWord* word = (DictionaryWord*)runtime->asPtr(addr);
 	word->referenceInstruction = refIns;
-	return word;
 }
 
 	

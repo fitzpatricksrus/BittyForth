@@ -1,6 +1,6 @@
 #ifndef StructuredMemory_hpp
 #define StructuredMemory_hpp
-/*
+
 #include "Types.hpp"
 
 class DictionaryWord;
@@ -39,4 +39,3 @@ T* StructuredMemory::append(T value) {
 
 
 #endif /* StructuredMemory_hpp */
-*/

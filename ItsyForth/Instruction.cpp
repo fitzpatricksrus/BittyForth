@@ -4,83 +4,82 @@
 void Instruction::execute(Runtime* runtime, int currentInstructionPtr, int nextInstructionPtr) {
 	Cell& currentCell = runtime->getCell(currentInstructionPtr);
 	Instruction& currentInstruction = currentCell.asInstruction;
-
 	switch (currentCell.asInstruction.opcode) {
-	case OpCode::DoColon: {
+	case DoColon: {
 		runtime->pushReturn(nextInstructionPtr);
 		runtime->setNextInstructionPointer(currentInstruction.data);
 		break; }
-	case OpCode::DoSemicolon:
+	case DoSemicolon:
 		runtime->setNextInstructionPointer(runtime->popReturn());
 		break;
-	case OpCode::DoLit:
+	case DoLit:
 		runtime->pushData(currentInstruction.data);
 		break;
-	case OpCode::DoConstant:
+	case DoConstant:
 		//push the next cell on data stack and drop the return stack pointer
 		runtime->pushData(runtime->getCell(nextInstructionPtr).asData);
 		runtime->popReturn();
 		break;
-	case OpCode::DoVariable:
+	case DoVariable:
 		//push address of next cell on data stack and drop the return stack pointer
 		runtime->pushData(nextInstructionPtr);
 		runtime->popReturn();
 		break;
-/*	case OpCode::Comma: {
+/*	case Comma: {
 		Builder(runtime).compileReference(runtime->popData());
 		break; } */
-	case OpCode::Rot: {
+	case Rot: {
 		long temp = runtime->peekData(2);
 		runtime->pokeData(2, runtime->peekData(1));
 		runtime->pokeData(1, runtime->peekData(0));
 		runtime->pokeData(0, temp);
 		break; }
-	case OpCode::Drop:
+	case Drop:
 		runtime->popData();
 		break;
-	case OpCode::Dup:
+	case Dup:
 		runtime->pushData(runtime->tos());
 		break;
-	case OpCode::Swap: {
+	case Swap: {
 		long temp = runtime->tos();
 		runtime->pokeData(0, runtime->peekData(1));
 		runtime->pokeData(1, temp);
 		break; }
-	case OpCode::Plus:
+	case Plus:
 		runtime->pushData(runtime->popData() + runtime->popData());
 		break;
-	case OpCode::Equals:
+	case Equals:
 		runtime->pushData(runtime->popData() == runtime->popData());
 		break;
-	case OpCode::At:
+	case At:
 		runtime->pushData(runtime->getCell(runtime->popData()).asData);
 		break;
-	case OpCode::Put: {
+	case Put: {
 		int addr = runtime->popData();
 		runtime->setCell(addr, runtime->popData());
 		break; }
-	case OpCode::ZeroBranch: {
+	case ZeroBranch: {
 		if (runtime->popData() == 0) {
 			runtime->setNextInstructionPointer(currentInstruction.data);
 		}
 		break; }
-	case OpCode::Branch:
+	case Branch:
 		runtime->setNextInstructionPointer(currentInstruction.data);
 		break;
-	case OpCode::Execute:
+	case Execute:
 		runtime->pushReturn(nextInstructionPtr);
 		runtime->setNextInstructionPointer(runtime->popData());
 		break;
-	case OpCode::Exit:
+	case Exit:
 		// should never get here.
 		break;
-	case OpCode::Count: {	// ( addr -- addr2 len )
+	case Count: {	// ( addr -- addr2 len )
 					// dup 1 + swap c@
 		int addr = runtime->popData();
 		runtime->pushData(addr + 1);
 		runtime->pushData(runtime->getByte(addr));
 		break; }
-/*	case OpCode::ToNumber: {	//( ud1 c-addr1 u1 -- ud2 c-addr2 u2 )
+/*	case ToNumber: {	//( ud1 c-addr1 u1 -- ud2 c-addr2 u2 )
 		//>number - ( double addr len -- double2 addr2-zero    ) if successful, or
 		//			( double addr len -- long     addr2-nonzero ) on error.
 		int len = runtime->popData();
@@ -102,7 +101,7 @@ void Instruction::execute(Runtime* runtime, int currentInstructionPtr, int nextI
 		runtime->pushData(addr);
 		runtime->pushData(len);
 		break; } */
-/*	case OpCode::Accept: {	//( addr len -- len2 )
+/*	case Accept: {	//( addr len -- len2 )
 		int maxLen = runtime->popData();
 		char* addr = (char*)runtime->popData();
 		long ndx;
@@ -120,17 +119,17 @@ void Instruction::execute(Runtime* runtime, int currentInstructionPtr, int nextI
 //		}
 		runtime->pushData(ndx);
 		break; } */
-/*	case OpCode::Word: { // ( char -- addr )
+/*	case Word: { // ( char -- addr )
 		char* pad = (char*)runtime->getDictionaryPtr();
 		char delimeter = runtime->popData();
 		std::string nameIn = Builder(runtime).getNextInputWord(delimeter);
 		CountedString::fromCString(nameIn, pad, padLength);
 		runtime->pushData(pad);
 		break; } */
-	case OpCode::Emit:	// ( char -- )
+	case Emit:	// ( char -- )
 		runtime->emit((char)runtime->popData());
 		break;
-/*	case OpCode::Find: {
+/*	case Find: {
 		// addr -- addr2 flag  look up word in the dictionary
 		// find looks in the Forth dictionary for a word with the name given in the
 		// counted string at addr. One of the following will be returned:
@@ -157,7 +156,7 @@ void Instruction::execute(Runtime* runtime, int currentInstructionPtr, int nextI
 			runtime->pushData(0L);
 		}
 		break; } */
-/*	case OpCode::Create: {
+/*	case Create: {
 		// -- create a new word --
 		Builder(runtime).createWord(OpCode::Colon);
 		break; } */
@@ -198,6 +197,6 @@ static const std::string OPCODE_NAMES[] = {
 	};
 
 std::string Instruction::toString() const {
-	return OPCODE_NAMES[(int)opcode] + "(" + std::to_string(data) + ")";
+	return OPCODE_NAMES[opcode] + "(" + std::to_string(data) + ")";
 }
 

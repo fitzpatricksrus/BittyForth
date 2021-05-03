@@ -1,5 +1,5 @@
 #include <iostream>
-/*
+
 #include "Runtime.hpp"
 #include "Compiler.hpp"
 #include "InterpreterBuilder.hpp"
@@ -12,4 +12,3 @@ int main(int argc, const char * argv[]) {
 	
 	return 0;
 }
-*/

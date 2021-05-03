@@ -8,7 +8,7 @@ public:
 	int previous;
 	char name[32];
 	Instruction referenceInstruction;
-	Cell* cells;
+	Cell cells[];
 };
 
 #endif /* DictionaryWord_hpp */

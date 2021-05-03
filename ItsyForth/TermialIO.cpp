@@ -1,5 +1,5 @@
 #include "TermialIO.hpp"
-/*
+
 #include "Runtime.hpp"
 
 TerminalIO::TerminalIO(Runtime* runtimeIn) {
@@ -29,4 +29,3 @@ std::string TerminalIO::getNextInputWord(char delimeter) {
 
 void TerminalIO::emit(char c) {
 }
-*/

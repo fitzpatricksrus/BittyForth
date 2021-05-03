@@ -248,4 +248,3 @@ void OpCode::execute(Runtime* runtime, DictionaryWord* currentWord) {
 }
 */
 
-
