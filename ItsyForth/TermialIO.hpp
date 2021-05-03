@@ -1,6 +1,6 @@
 #ifndef TermialIO_hpp
 #define TermialIO_hpp
-
+/*
 #include <string>
 class Runtime;
 
@@ -13,5 +13,5 @@ public:
 private:
 	Runtime* runtime;
 };
-
+*/
 #endif /* TermialIO_hpp */

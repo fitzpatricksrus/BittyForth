@@ -1,6 +1,6 @@
 #ifndef CoreDictionary_hpp
 #define CoreDictionary_hpp
-
+/*
 #include <string>
 class Runtime;
 class DictionaryWord;
@@ -15,5 +15,5 @@ public:
 private:
 	Runtime* runtime;
 };
-
+*/
 #endif /* CoreDictionary_hpp */

@@ -1,3 +1,5 @@
+/*
+
 #include <stddef.h>
 #include <cassert>
 
@@ -25,3 +27,4 @@ Ptr StructuredMemory::allocate(int bytes) {
 	dictionaryPtr += bytes;
 	return result;
 }
+*/

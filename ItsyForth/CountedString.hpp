@@ -2,7 +2,6 @@
 #define CountedString_hpp
 
 #include <string>
-#include "Types.hpp"
 
 class CountedString {
 public:

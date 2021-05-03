@@ -66,6 +66,7 @@ int Compiler::compileVariable(const std::string& name, int initialValue) {
 int Compiler::compileConstant(const std::string& name, int value) {
 	int result = createWord(name, OpCode::DoConstant, value);
 	dbg(result, Instruction(OpCode::DoConstant, value).toString());
+	return result;
 }
 
 int Compiler::compileStartColonWord(const std::string& name) {

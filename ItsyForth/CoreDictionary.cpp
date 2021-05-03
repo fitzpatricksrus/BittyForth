@@ -1,5 +1,5 @@
 #include "CoreDictionary.hpp"
-
+/*
 #include "Runtime.hpp"
 #include "Builder.hpp"
 #include "OpCode.hpp"
@@ -99,7 +99,7 @@ void CoreDictionary::rebuildDictionary() {
 			then
 		again
 		;
-	 */
+	 *
 	builder.createWord("interpret", OpCode::Colon);
 	builder.compileBegin();
 		builder.append("#tib");
@@ -167,3 +167,4 @@ void CoreDictionary::rebuildDictionary() {
 	builder.append("(doSemicolon)");
 
 }
+*/
